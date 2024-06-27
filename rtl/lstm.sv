@@ -518,7 +518,7 @@ always @(posedge clk or negedge rst_n) begin
             BUSY:
             case(counter)
                 15:begin
-                    y <= (r1 * r2) >> 7; //忽略最低位的数据
+                    y <= (r1 * r2)>> 7; //忽略最低位的数据
                     valid <= 1;
                 end
                 default:begin

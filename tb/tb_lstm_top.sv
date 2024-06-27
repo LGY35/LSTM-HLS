@@ -87,119 +87,40 @@ initial begin
     y_in[2] = 8'b00000000;
     y_in[3] = 8'b00000000;
     // Wait for the global reset
-    #(CYCLE*2);
+    repeat(2)@(posedge clk);
     rst_n = 1;
-    #(CYCLE*2);
+    repeat(2)@(posedge clk);
 
-    // // Stimulate inputs
-    // start = 1;
-    // #(CYCLE*2);
-    // start = 0;
-    // #(CYCLE*50); // Wait for some operations to happen
+    // Stimulate inputs
+    start = 1;
+    repeat(2)@(posedge clk);
+    start = 0;
+    repeat(50)@(posedge clk); // Wait for some operations to happen
 
-    // //第二次
-    // x[0] = 8'b00101101;
-    // x[1] = 8'b10111100;
-    // x[2] = 8'b00101001;
-    // x[3] = 8'b01010111;
-    // start = 1;
-    // #(CYCLE*2);
-    // start = 0;
-    // #(CYCLE*50);
+    //第二次
+    x[0] = 8'b00101101;
+    x[1] = 8'b10111100;
+    x[2] = 8'b00101001;
+    x[3] = 8'b01010111;
+    start = 1;
+    repeat(2)@(posedge clk);
+    start = 0;
+    repeat(50)@(posedge clk);
 
-    // //第三次
-    // x[0] = 8'b00100010;
-    // x[1] = 8'b11100001;
-    // x[2] = 8'b01000101;
-    // x[3] = 8'b01010101;
-    // start = 1;
-    // #(CYCLE*2);
-    // start = 0;
-    // #(CYCLE*50);
+    //第三次
+    x[0] = 8'b00100010;
+    x[1] = 8'b11100001;
+    x[2] = 8'b01000101;
+    x[3] = 8'b01010101;
+    start = 1;
+    repeat(2)@(posedge clk);
+    start = 0;
+    repeat(50)@(posedge clk);
 
     // Finish the simulation
-    #(CYCLE*150);
+    repeat(150)@(posedge clk);
     $finish;
 end
-
-//用于迭代
-always @(posedge clk) begin
-    if(cnt < 15)
-        cnt <= cnt + 1;
-    else
-        cnt <= 15;
-end
-
-// 产生start信号
-always @(posedge clk) begin
-    if(cnt == 12 || finished == 1)  //产生start为cnt=12，即第一次，或者finished等于1，上次结束
-        start <= 1;
-    else
-        start <= 0;
-end
-
-always @(posedge clk) begin
-    if(finished == 1)   //如果四个都完成了
-        t <= t - 1;
-    if(t == 0)
-        t <= 0;     //停止运行
-end
-
-//t-1输入给t
-always @(posedge clk) begin
-    if(finished == 1)
-    begin
-        y_in[0] <= y_out[0];
-        y_in[1] <= y_out[1];
-        y_in[2] <= y_out[2];
-        y_in[3] <= y_out[3];
-    end
-    else begin
-        y_in[0] <= 0;
-        y_in[1] <= 0;
-        y_in[2] <= 0;
-        y_in[3] <= 0;
-    end
-end
-
-always @(posedge clk) begin
-    if(finished == 1)
-    begin
-        case(t)
-        4:
-        begin
-            x[0] <= X10_IN;
-            x[1] <= X11_IN;
-            x[2] <= X12_IN;
-            x[3] <= X13_IN;
-        end
-        3:
-        begin
-            x[0] <= X20_IN;
-            x[1] <= X21_IN;
-            x[2] <= X22_IN;
-            x[3] <= X23_IN;
-        end
-        2:
-        begin
-            x[0] <= X30_IN;
-            x[1] <= X31_IN;
-            x[2] <= X32_IN;
-            x[3] <= X33_IN;
-        end
-        1:
-        begin
-            x[0] <= X40_IN;
-            x[1] <= X41_IN;
-            x[2] <= X42_IN;
-            x[3] <= X43_IN;
-        end
-        default:;
-        endcase
-    end
-end
-
-
 
 // Display outputs for debugging
 initial begin
@@ -209,8 +130,87 @@ end
 // 生成FSDB文件
 initial begin
     $fsdbDumpfile("lstm_top.fsdb"); // FSDB文件名
-    $fsdbDumpvars("+all");
+    $fsdbDumpvars("+all");//$fsdbDumpvars(0, uut);  // 记录所有信号
     $fsdbDumpon;
 end
 
 endmodule
+
+
+
+// //用于迭代
+// always @(posedge clk) begin
+//     if(cnt < 15)
+//         cnt <= cnt + 1;
+//     else
+//         cnt <= 15;
+// end
+
+// // 产生start信号
+// always @(posedge clk) begin
+//     if(cnt == 12 || finished == 1)  //产生start为cnt=12，即第一次，或者finished等于1，上次结束
+//         start <= 1;
+//     else
+//         start <= 0;
+// end
+
+// always @(posedge clk) begin
+//     if(finished == 1)   //如果四个都完成了
+//         t <= t - 1;
+//     if(t == 0)
+//         t <= 0;     //停止运行
+// end
+
+// //t-1输入给t
+// always @(posedge clk) begin
+//     if(finished == 1)
+//     begin
+//         y_in[0] <= y_out[0];
+//         y_in[1] <= y_out[1];
+//         y_in[2] <= y_out[2];
+//         y_in[3] <= y_out[3];
+//     end
+//     else begin
+//         y_in[0] <= 0;
+//         y_in[1] <= 0;
+//         y_in[2] <= 0;
+//         y_in[3] <= 0;
+//     end
+// end
+
+// always @(posedge clk) begin
+//     if(finished == 1)
+//     begin
+//         case(t)
+//         4:
+//         begin
+//             x[0] <= X10_IN;
+//             x[1] <= X11_IN;
+//             x[2] <= X12_IN;
+//             x[3] <= X13_IN;
+//         end
+//         3:
+//         begin
+//             x[0] <= X20_IN;
+//             x[1] <= X21_IN;
+//             x[2] <= X22_IN;
+//             x[3] <= X23_IN;
+//         end
+//         2:
+//         begin
+//             x[0] <= X30_IN;
+//             x[1] <= X31_IN;
+//             x[2] <= X32_IN;
+//             x[3] <= X33_IN;
+//         end
+//         1:
+//         begin
+//             x[0] <= X40_IN;
+//             x[1] <= X41_IN;
+//             x[2] <= X42_IN;
+//             x[3] <= X43_IN;
+//         end
+//         default:;
+//         endcase
+//     end
+// end

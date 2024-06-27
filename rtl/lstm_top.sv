@@ -37,9 +37,9 @@ reg valid3;
 //-----------------------------sigmod-----------------------------
 //lstm0  in out是相对于lstm unit而言
 reg signed[DATA_WIDTH-1:0] sigmoid_mem [0:255];
-wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_idx1;//连接到lstm的out，作为查找表的索引
-wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_idx2;//连接到lstm的out，作为查找表的索引
-wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_idx3;//连接到lstm的out，作为查找表的索引
+wire [DATA_WIDTH-1:0] lstm0_sigmod_data_idx1;//连接到lstm的out，作为查找表的索引    // 不能加signed，这里是无符号数
+wire [DATA_WIDTH-1:0] lstm0_sigmod_data_idx2;//连接到lstm的out，作为查找表的索引
+wire [DATA_WIDTH-1:0] lstm0_sigmod_data_idx3;//连接到lstm的out，作为查找表的索引
 wire lstm0_sigmod_request1;
 wire lstm0_sigmod_request2;
 wire lstm0_sigmod_request3;
@@ -47,9 +47,9 @@ reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_result1;//连接到lstm的in，作�
 reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_result2;//连接到lstm的in，作为查找表的结果
 reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_result3;//连接到lstm的in，作为查找表的结果
 //lstm1
-wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_idx1;
-wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_idx2;
-wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_idx3;
+wire [DATA_WIDTH-1:0] lstm1_sigmod_data_idx1;
+wire [DATA_WIDTH-1:0] lstm1_sigmod_data_idx2;
+wire [DATA_WIDTH-1:0] lstm1_sigmod_data_idx3;
 wire lstm1_sigmod_request1;
 wire lstm1_sigmod_request2;
 wire lstm1_sigmod_request3;
@@ -57,9 +57,9 @@ reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_result1;
 reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_result2;
 reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_result3;
 //lstm2
-wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_idx1;
-wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_idx2;
-wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_idx3;
+wire [DATA_WIDTH-1:0] lstm2_sigmod_data_idx1;
+wire [DATA_WIDTH-1:0] lstm2_sigmod_data_idx2;
+wire [DATA_WIDTH-1:0] lstm2_sigmod_data_idx3;
 wire lstm2_sigmod_request1;
 wire lstm2_sigmod_request2;
 wire lstm2_sigmod_request3;
@@ -67,9 +67,9 @@ reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_result1;
 reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_result2;
 reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_result3;
 //lstm3
-wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_idx1;
-wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_idx2;
-wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_idx3;
+wire [DATA_WIDTH-1:0] lstm3_sigmod_data_idx1;
+wire [DATA_WIDTH-1:0] lstm3_sigmod_data_idx2;
+wire [DATA_WIDTH-1:0] lstm3_sigmod_data_idx3;
 wire lstm3_sigmod_request1;
 wire lstm3_sigmod_request2;
 wire lstm3_sigmod_request3;
