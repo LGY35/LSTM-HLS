@@ -153,7 +153,7 @@ always @(*) begin
     case(curr_state)
         BUSY:
             case(counter)
-                9-1: begin    
+                9: begin    
                     // r1 计算sigmod查找表。输出为 -128 至 127 的 8bit 有符号数
                     begin   // r1是由两个8bit有符号数相乘得到，不会超过16bit，而低位可能引入噪声或不重要的信息，所以选择中间的7bit
                         if(r1 > 32767)
@@ -238,8 +238,6 @@ reg [REG_WIDTH-1:0] r1_0, r1_1, r1_2, r1_3;
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 1'b0) begin
         r1 <= 0;
-        sigmod_data_out1 <= 0;
-        sigmod_request1 <= 0;
     end 
     else begin
         case(curr_state)
@@ -311,9 +309,7 @@ reg [REG_WIDTH-1:0] r2_0, r2_1, r2_2, r2_3;
 // reg2
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 1'b0) begin
-        r2 <= 0;
-        sigmod_data_out2 <= 0;
-        sigmod_request2 <= 0;  
+        r2 <= 0; 
     end
     else 
         case(curr_state)
@@ -383,8 +379,6 @@ reg [REG_WIDTH-1:0] r3_0, r3_1, r3_2, r3_3;
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 1'b0) begin
         r3 <= 0;
-        sigmod_data_out3 <= 0;
-        sigmod_request3 <= 0; 
     end 
     else 
         case(curr_state)
@@ -503,8 +497,8 @@ always @(posedge clk or negedge rst_n) begin
             BUSY:
             case(counter)
                 11:  begin
-                    // c <= (r1 + r2) ; //忽略最低位的数据
-                    c <=1;
+                    c <= (r1 + r2) ; //忽略最低位的数据
+                    // c <=1;
                 end
                 default:;
             endcase 

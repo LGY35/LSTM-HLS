@@ -22,11 +22,7 @@ reg signed [DATA_WIDTH-1:0] y_in0;
 reg signed [DATA_WIDTH-1:0] y_in1;
 reg signed [DATA_WIDTH-1:0] y_in2;
 reg signed [DATA_WIDTH-1:0] y_in3;
-//y_out
-// reg signed [DATA_WIDTH-1:0] y_out0;
-// reg signed [DATA_WIDTH-1:0] y_out1;
-// reg signed [DATA_WIDTH-1:0] y_out2;
-// reg signed [DATA_WIDTH-1:0] y_out3;
+
 //与lstmi的接口，只有valid之后才传递给y_out
 wire signed [DATA_WIDTH-1:0] y_t0;
 wire signed [DATA_WIDTH-1:0] y_t1;
@@ -167,10 +163,6 @@ end
 //输出y
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 0) begin
-        // y_out0 <= 0;
-        // y_out1 <= 0;
-        // y_out2 <= 0;
-        // y_out3 <= 0;
         y_out[0] <= 0;
         y_out[1] <= 0;
         y_out[2] <= 0;
@@ -193,10 +185,6 @@ always @(posedge clk or negedge rst_n) begin
             y_out[3] <= y_t3;
         else
             y_out[3] <= 0;
-        // y_out[0] <= y_out0;
-        // y_out[1] <= y_out1;
-        // y_out[2] <= y_out2;
-        // y_out[3] <= y_out3;
     end
 end
 

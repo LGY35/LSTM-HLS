@@ -209,7 +209,7 @@ end
 // 生成FSDB文件
 initial begin
     $fsdbDumpfile("lstm_top.fsdb"); // FSDB文件名
-    $fsdbDumpvars("+all");//$fsdbDumpvars(0, uut);  // 记录所有信号
+    $fsdbDumpvars("+all");
     $fsdbDumpon;
 end
 
