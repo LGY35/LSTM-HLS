@@ -33,8 +33,8 @@ reg signed [DATA_WIDTH-1:0] X40_IN;
 reg signed [DATA_WIDTH-1:0] X41_IN;
 reg signed [DATA_WIDTH-1:0] X42_IN;
 reg signed [DATA_WIDTH-1:0] X43_IN;
-reg [2:0]t;
-reg [5:0]cnt;
+// reg [2:0]t;
+// reg [5:0]cnt;
 
 // Instantiate the Unit Under Test (UUT)
 lstm_top #(
@@ -60,8 +60,8 @@ initial begin
     // Initialize Inputs
     rst_n = 0;
     start = 0;
-    t = 4;
-    cnt=0;
+    // t = 4;
+    // cnt=0;
     x[0] = 8'b00100101;
     x[1] = 8'b00110101;
     x[2] = 8'b11110101;
@@ -95,7 +95,15 @@ initial begin
     start = 1;
     repeat(2)@(posedge clk);
     start = 0;
-    repeat(50)@(posedge clk); // Wait for some operations to happen
+    repeat(50)@(posedge clk) begin
+        if(finished == 1) begin
+            y_in[0] <= y_out[0];
+            y_in[1] <= y_out[1];
+            y_in[2] <= y_out[2];
+            y_in[3] <= y_out[3];
+        end
+    end
+    
 
     //第二次
     x[0] = 8'b00101101;
@@ -105,7 +113,14 @@ initial begin
     start = 1;
     repeat(2)@(posedge clk);
     start = 0;
-    repeat(50)@(posedge clk);
+    repeat(50)@(posedge clk) begin
+        if(finished == 1) begin
+            y_in[0] <= y_out[0];
+            y_in[1] <= y_out[1];
+            y_in[2] <= y_out[2];
+            y_in[3] <= y_out[3];
+        end
+    end
 
     //第三次
     x[0] = 8'b00100010;
@@ -115,12 +130,55 @@ initial begin
     start = 1;
     repeat(2)@(posedge clk);
     start = 0;
-    repeat(50)@(posedge clk);
+    repeat(50)@(posedge clk) begin
+        if(finished == 1) begin
+            y_in[0] <= y_out[0];
+            y_in[1] <= y_out[1];
+            y_in[2] <= y_out[2];
+            y_in[3] <= y_out[3];
+        end
+    end
+
+    //第四次
+    x[0] = 8'b01110001;
+    x[1] = 8'b00011011;
+    x[2] = 8'b11011010;
+    x[3] = 8'b11000010;
+    start = 1;
+    repeat(2)@(posedge clk);
+    start = 0;
+    repeat(50)@(posedge clk) begin
+        if(finished == 1) begin
+            y_in[0] <= y_out[0];
+            y_in[1] <= y_out[1];
+            y_in[2] <= y_out[2];
+            y_in[3] <= y_out[3];
+        end
+    end
+
+    //第五次
+    x[0] = 8'b10110101;
+    x[1] = 8'b11110011;
+    x[2] = 8'b00101001;
+    x[3] = 8'b00011101;
+    start = 1;
+    repeat(2)@(posedge clk);
+    start = 0;
+    repeat(50)@(posedge clk) begin
+        if(finished == 1) begin
+            y_in[0] <= y_out[0];
+            y_in[1] <= y_out[1];
+            y_in[2] <= y_out[2];
+            y_in[3] <= y_out[3];
+        end
+    end
 
     // Finish the simulation
     repeat(150)@(posedge clk);
     $finish;
 end
+
+
 
 // Display outputs for debugging
 initial begin
@@ -135,8 +193,6 @@ initial begin
 end
 
 endmodule
-
-
 
 // //用于迭代
 // always @(posedge clk) begin
@@ -160,24 +216,6 @@ endmodule
 //     if(t == 0)
 //         t <= 0;     //停止运行
 // end
-
-// //t-1输入给t
-// always @(posedge clk) begin
-//     if(finished == 1)
-//     begin
-//         y_in[0] <= y_out[0];
-//         y_in[1] <= y_out[1];
-//         y_in[2] <= y_out[2];
-//         y_in[3] <= y_out[3];
-//     end
-//     else begin
-//         y_in[0] <= 0;
-//         y_in[1] <= 0;
-//         y_in[2] <= 0;
-//         y_in[3] <= 0;
-//     end
-// end
-
 // always @(posedge clk) begin
 //     if(finished == 1)
 //     begin
@@ -214,3 +252,4 @@ endmodule
 //         endcase
 //     end
 // end
+

@@ -502,8 +502,7 @@ always @(posedge clk or negedge rst_n) begin
                 end
                 default:;
             endcase 
-            default:
-                c <= 0;
+            default:;   // 不能清零！！！！！！！！！！否则失去记忆功能！！！！！！！！！！！！
         endcase
 end
 

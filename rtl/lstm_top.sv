@@ -12,16 +12,17 @@ module lstm_top
     output reg signed [DATA_WIDTH-1:0] y_out[0:3]
 );
 
+//TODO: 要求所有的数据都要有寄存器，所以下面是不是必须要有
 // x
-reg signed [DATA_WIDTH-1:0] x0;
-reg signed [DATA_WIDTH-1:0] x1;
-reg signed [DATA_WIDTH-1:0] x2;
-reg signed [DATA_WIDTH-1:0] x3;
+// reg signed [DATA_WIDTH-1:0] x0;
+// reg signed [DATA_WIDTH-1:0] x1;
+// reg signed [DATA_WIDTH-1:0] x2;
+// reg signed [DATA_WIDTH-1:0] x3;
 // y_in
-reg signed [DATA_WIDTH-1:0] y_in0;
-reg signed [DATA_WIDTH-1:0] y_in1;
-reg signed [DATA_WIDTH-1:0] y_in2;
-reg signed [DATA_WIDTH-1:0] y_in3;
+// reg signed [DATA_WIDTH-1:0] y_in0;
+// reg signed [DATA_WIDTH-1:0] y_in1;
+// reg signed [DATA_WIDTH-1:0] y_in2;
+// reg signed [DATA_WIDTH-1:0] y_in3;
 
 //与lstmi的接口，只有valid之后才传递给y_out
 wire signed [DATA_WIDTH-1:0] y_t0;
@@ -119,36 +120,41 @@ wire signed [DATA_WIDTH*4-1:0] Rf3;
 wire signed [DATA_WIDTH*4-1:0] Ro3;  
 wire signed [DATA_WIDTH*3-1:0] p3; 
 
+// //例化：
+// lstm lstm0(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi0,Wz0,Wf0,Wo0,Ri0,Rz0,Rf0,Ro0,p0,lstm0_sigmod_data_result1,lstm0_sigmod_data_result2,lstm0_sigmod_data_result3,lstm0_sigmod_request1,lstm0_sigmod_request2,lstm0_sigmod_request3,lstm0_sigmod_data_idx1,lstm0_sigmod_data_idx2,lstm0_sigmod_data_idx3,valid0,y_t0);
+// lstm lstm1(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi1,Wz1,Wf1,Wo1,Ri1,Rz1,Rf1,Ro1,p1,lstm1_sigmod_data_result1,lstm1_sigmod_data_result2,lstm1_sigmod_data_result3,lstm1_sigmod_request1,lstm1_sigmod_request2,lstm1_sigmod_request3,lstm1_sigmod_data_idx1,lstm1_sigmod_data_idx2,lstm1_sigmod_data_idx3,valid1,y_t1);
+// lstm lstm2(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi2,Wz2,Wf2,Wo2,Ri2,Rz2,Rf2,Ro2,p2,lstm2_sigmod_data_result1,lstm2_sigmod_data_result2,lstm2_sigmod_data_result3,lstm2_sigmod_request1,lstm2_sigmod_request2,lstm2_sigmod_request3,lstm2_sigmod_data_idx1,lstm2_sigmod_data_idx2,lstm2_sigmod_data_idx3,valid2,y_t2);
+// lstm lstm3(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi3,Wz3,Wf3,Wo3,Ri3,Rz3,Rf3,Ro3,p3,lstm3_sigmod_data_result1,lstm3_sigmod_data_result2,lstm3_sigmod_data_result3,lstm3_sigmod_request1,lstm3_sigmod_request2,lstm3_sigmod_request3,lstm3_sigmod_data_idx1,lstm3_sigmod_data_idx2,lstm3_sigmod_data_idx3,valid3,y_t3);
 //例化：
-lstm lstm0(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi0,Wz0,Wf0,Wo0,Ri0,Rz0,Rf0,Ro0,p0,lstm0_sigmod_data_result1,lstm0_sigmod_data_result2,lstm0_sigmod_data_result3,lstm0_sigmod_request1,lstm0_sigmod_request2,lstm0_sigmod_request3,lstm0_sigmod_data_idx1,lstm0_sigmod_data_idx2,lstm0_sigmod_data_idx3,valid0,y_t0);
-lstm lstm1(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi1,Wz1,Wf1,Wo1,Ri1,Rz1,Rf1,Ro1,p1,lstm1_sigmod_data_result1,lstm1_sigmod_data_result2,lstm1_sigmod_data_result3,lstm1_sigmod_request1,lstm1_sigmod_request2,lstm1_sigmod_request3,lstm1_sigmod_data_idx1,lstm1_sigmod_data_idx2,lstm1_sigmod_data_idx3,valid1,y_t1);
-lstm lstm2(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi2,Wz2,Wf2,Wo2,Ri2,Rz2,Rf2,Ro2,p2,lstm2_sigmod_data_result1,lstm2_sigmod_data_result2,lstm2_sigmod_data_result3,lstm2_sigmod_request1,lstm2_sigmod_request2,lstm2_sigmod_request3,lstm2_sigmod_data_idx1,lstm2_sigmod_data_idx2,lstm2_sigmod_data_idx3,valid2,y_t2);
-lstm lstm3(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi3,Wz3,Wf3,Wo3,Ri3,Rz3,Rf3,Ro3,p3,lstm3_sigmod_data_result1,lstm3_sigmod_data_result2,lstm3_sigmod_data_result3,lstm3_sigmod_request1,lstm3_sigmod_request2,lstm3_sigmod_request3,lstm3_sigmod_data_idx1,lstm3_sigmod_data_idx2,lstm3_sigmod_data_idx3,valid3,y_t3);
+lstm lstm0(clk,rst_n,start,x[0],x[1],x[2],x[3],y_in[0],y_in[1],y_in[2],y_in[3],Wi0,Wz0,Wf0,Wo0,Ri0,Rz0,Rf0,Ro0,p0,lstm0_sigmod_data_result1,lstm0_sigmod_data_result2,lstm0_sigmod_data_result3,lstm0_sigmod_request1,lstm0_sigmod_request2,lstm0_sigmod_request3,lstm0_sigmod_data_idx1,lstm0_sigmod_data_idx2,lstm0_sigmod_data_idx3,valid0,y_t0);
+lstm lstm1(clk,rst_n,start,x[0],x[1],x[2],x[3],y_in[0],y_in[1],y_in[2],y_in[3],Wi1,Wz1,Wf1,Wo1,Ri1,Rz1,Rf1,Ro1,p1,lstm1_sigmod_data_result1,lstm1_sigmod_data_result2,lstm1_sigmod_data_result3,lstm1_sigmod_request1,lstm1_sigmod_request2,lstm1_sigmod_request3,lstm1_sigmod_data_idx1,lstm1_sigmod_data_idx2,lstm1_sigmod_data_idx3,valid1,y_t1);
+lstm lstm2(clk,rst_n,start,x[0],x[1],x[2],x[3],y_in[0],y_in[1],y_in[2],y_in[3],Wi2,Wz2,Wf2,Wo2,Ri2,Rz2,Rf2,Ro2,p2,lstm2_sigmod_data_result1,lstm2_sigmod_data_result2,lstm2_sigmod_data_result3,lstm2_sigmod_request1,lstm2_sigmod_request2,lstm2_sigmod_request3,lstm2_sigmod_data_idx1,lstm2_sigmod_data_idx2,lstm2_sigmod_data_idx3,valid2,y_t2);
+lstm lstm3(clk,rst_n,start,x[0],x[1],x[2],x[3],y_in[0],y_in[1],y_in[2],y_in[3],Wi3,Wz3,Wf3,Wo3,Ri3,Rz3,Rf3,Ro3,p3,lstm3_sigmod_data_result1,lstm3_sigmod_data_result2,lstm3_sigmod_data_result3,lstm3_sigmod_request1,lstm3_sigmod_request2,lstm3_sigmod_request3,lstm3_sigmod_data_idx1,lstm3_sigmod_data_idx2,lstm3_sigmod_data_idx3,valid3,y_t3);
 
 
-//输入与输出的端口对应
-always @(posedge clk or negedge rst_n) begin
-    if(rst_n == 0) begin
-        x0 <= x[0];
-        x1 <= x[1];
-        x2 <= x[2];
-        x3 <= x[3];
-        y_in0 <= y_in[0];
-        y_in1 <= y_in[1];
-        y_in2 <= y_in[2];
-        y_in3 <= y_in[3];
-    end
-    else begin
-        x0 <= x[0];
-        x1 <= x[1];
-        x2 <= x[2];
-        x3 <= x[3];
-        y_in0 <= y_in[0];
-        y_in1 <= y_in[1];
-        y_in2 <= y_in[2];
-        y_in3 <= y_in[3];
-    end
-end
+// //输入与输出的端口对应
+// always @(posedge clk or negedge rst_n) begin
+//     if(rst_n == 0) begin
+//         x0 <= x[0];
+//         x1 <= x[1];
+//         x2 <= x[2];
+//         x3 <= x[3];
+//         y_in0 <= y_in[0];
+//         y_in1 <= y_in[1];
+//         y_in2 <= y_in[2];
+//         y_in3 <= y_in[3];
+//     end
+//     else begin
+//         x0 <= x[0];
+//         x1 <= x[1];
+//         x2 <= x[2];
+//         x3 <= x[3];
+//         y_in0 <= y_in[0];
+//         y_in1 <= y_in[1];
+//         y_in2 <= y_in[2];
+//         y_in3 <= y_in[3];
+//     end
+// end
 
 //完成信号
 always @(posedge clk or negedge rst_n) begin
