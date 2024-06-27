@@ -7,8 +7,9 @@ module lstm_top
     input wire rst_n,
     input wire start,
     input wire signed [DATA_WIDTH-1:0] x[0:3],
+    input wire signed [DATA_WIDTH-1:0] y_in[0:3],
     output reg finished,
-    output reg signed [DATA_WIDTH-1:0] y[0:3]
+    output reg signed [DATA_WIDTH-1:0] y_out[0:3]
 );
 
 // x
@@ -40,45 +41,45 @@ reg valid3;
 //-----------------------------sigmod-----------------------------
 //lstm0  in out是相对于lstm unit而言
 reg signed[DATA_WIDTH-1:0] sigmoid_mem [0:255];
-wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_in1;
-wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_in2;
-wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_in3;
+wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_idx1;//连接到lstm的out，作为查找表的索引
+wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_idx2;//连接到lstm的out，作为查找表的索引
+wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_idx3;//连接到lstm的out，作为查找表的索引
 wire lstm0_sigmod_request1;
 wire lstm0_sigmod_request2;
 wire lstm0_sigmod_request3;
-wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_out1;
-wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_out2;
-wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_out3;
+reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_result1;//连接到lstm的in，作为查找表的结果
+reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_result2;//连接到lstm的in，作为查找表的结果
+reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_result3;//连接到lstm的in，作为查找表的结果
 //lstm1
-wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_in1;
-wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_in2;
-wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_in3;
+wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_idx1;
+wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_idx2;
+wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_idx3;
 wire lstm1_sigmod_request1;
 wire lstm1_sigmod_request2;
 wire lstm1_sigmod_request3;
-wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_out1;
-wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_out2;
-wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_out3;
+reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_result1;
+reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_result2;
+reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_result3;
 //lstm2
-wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_in1;
-wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_in2;
-wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_in3;
+wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_idx1;
+wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_idx2;
+wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_idx3;
 wire lstm2_sigmod_request1;
 wire lstm2_sigmod_request2;
 wire lstm2_sigmod_request3;
-wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_out1;
-wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_out2;
-wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_out3;
+reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_result1;
+reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_result2;
+reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_result3;
 //lstm3
-wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_in1;
-wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_in2;
-wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_in3;
+wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_idx1;
+wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_idx2;
+wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_idx3;
 wire lstm3_sigmod_request1;
 wire lstm3_sigmod_request2;
 wire lstm3_sigmod_request3;
-wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_out1;
-wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_out2;
-wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_out3;
+reg signed[DATA_WIDTH-1:0] lstm3_sigmod_data_result1;
+reg signed[DATA_WIDTH-1:0] lstm3_sigmod_data_result2;
+reg signed[DATA_WIDTH-1:0] lstm3_sigmod_data_result3;
 
 //------------------------weight-----------------------------
 //lstm0
@@ -123,10 +124,10 @@ wire signed [DATA_WIDTH*4-1:0] Ro3;
 wire signed [DATA_WIDTH*3-1:0] p3; 
 
 //例化：
-lstm lstm0(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi0,Wz0,Wf0,Wo0,Ri0,Rz0,Rf0,Ro0,p0,lstm0_sigmod_data_in1,lstm0_sigmod_data_in2,lstm0_sigmod_data_in3,lstm0_sigmod_request1,lstm0_sigmod_request2,lstm0_sigmod_request3,lstm0_sigmod_data_out1,lstm0_sigmod_data_out2,lstm0_sigmod_data_out3,valid0,y_t0);
-lstm lstm1(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi1,Wz1,Wf1,Wo1,Ri1,Rz1,Rf1,Ro1,p1,lstm1_sigmod_data_in1,lstm1_sigmod_data_in2,lstm1_sigmod_data_in3,lstm1_sigmod_request1,lstm1_sigmod_request2,lstm1_sigmod_request3,lstm1_sigmod_data_out1,lstm1_sigmod_data_out2,lstm1_sigmod_data_out3,valid1,y_t1);
-lstm lstm2(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi2,Wz2,Wf2,Wo2,Ri2,Rz2,Rf2,Ro2,p2,lstm2_sigmod_data_in1,lstm2_sigmod_data_in2,lstm2_sigmod_data_in3,lstm2_sigmod_request1,lstm2_sigmod_request2,lstm2_sigmod_request3,lstm2_sigmod_data_out1,lstm2_sigmod_data_out2,lstm2_sigmod_data_out3,valid2,y_t2);
-lstm lstm3(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi3,Wz3,Wf3,Wo3,Ri3,Rz3,Rf3,Ro3,p3,lstm3_sigmod_data_in1,lstm3_sigmod_data_in2,lstm3_sigmod_data_in3,lstm3_sigmod_request1,lstm3_sigmod_request2,lstm3_sigmod_request3,lstm3_sigmod_data_out1,lstm3_sigmod_data_out2,lstm3_sigmod_data_out3,valid3,y_t3);
+lstm lstm0(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi0,Wz0,Wf0,Wo0,Ri0,Rz0,Rf0,Ro0,p0,lstm0_sigmod_data_result1,lstm0_sigmod_data_result2,lstm0_sigmod_data_result3,lstm0_sigmod_request1,lstm0_sigmod_request2,lstm0_sigmod_request3,lstm0_sigmod_data_idx1,lstm0_sigmod_data_idx2,lstm0_sigmod_data_idx3,valid0,y_t0);
+lstm lstm1(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi1,Wz1,Wf1,Wo1,Ri1,Rz1,Rf1,Ro1,p1,lstm1_sigmod_data_result1,lstm1_sigmod_data_result2,lstm1_sigmod_data_result3,lstm1_sigmod_request1,lstm1_sigmod_request2,lstm1_sigmod_request3,lstm1_sigmod_data_idx1,lstm1_sigmod_data_idx2,lstm1_sigmod_data_idx3,valid1,y_t1);
+lstm lstm2(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi2,Wz2,Wf2,Wo2,Ri2,Rz2,Rf2,Ro2,p2,lstm2_sigmod_data_result1,lstm2_sigmod_data_result2,lstm2_sigmod_data_result3,lstm2_sigmod_request1,lstm2_sigmod_request2,lstm2_sigmod_request3,lstm2_sigmod_data_idx1,lstm2_sigmod_data_idx2,lstm2_sigmod_data_idx3,valid2,y_t2);
+lstm lstm3(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi3,Wz3,Wf3,Wo3,Ri3,Rz3,Rf3,Ro3,p3,lstm3_sigmod_data_result1,lstm3_sigmod_data_result2,lstm3_sigmod_data_result3,lstm3_sigmod_request1,lstm3_sigmod_request2,lstm3_sigmod_request3,lstm3_sigmod_data_idx1,lstm3_sigmod_data_idx2,lstm3_sigmod_data_idx3,valid3,y_t3);
 
 
 //输入与输出的端口对应
@@ -136,10 +137,10 @@ always @(posedge clk or negedge rst_n) begin
         x1 = x[1];
         x2 = x[2];
         x3 = x[3];
-        y_in2 = y[0];
-        y_in2 = y[1];
-        y_in2 = y[2];
-        y_in2 = y[3];
+        y_in0 = y_in[0];
+        y_in1 = y_in[1];
+        y_in2 = y_in[2];
+        y_in3 = y_in[3];
     end
 end
 
@@ -178,6 +179,7 @@ always @(posedge clk or negedge rst_n) begin
             y_out3 <= y_t3;
         else
             y_out3 <= 0;
+        y_out <= {y_out3,y_out2,y_out1,y_out0};
     end
 end
 
@@ -186,120 +188,120 @@ end
 //lstm0-sigmod1
 always @(*) begin
     if(lstm0_sigmod_request1 == 1) begin
-        lstm0_sigmod_data_out1 = sigmoid_mem[lstm0_sigmod_data_in1];
+        lstm0_sigmod_data_result1 = sigmoid_mem[lstm0_sigmod_data_idx1];
     end
     else begin
-        lstm0_sigmod_data_out1 = 0;
+        lstm0_sigmod_data_result1 = 0;
     end
 end
 
 //lstm0-sigmod2
 always @(*) begin
     if(lstm0_sigmod_request2 == 1) begin
-        lstm0_sigmod_data_out2 = sigmoid_mem[lstm0_sigmod_data_in2];
+        lstm0_sigmod_data_result2 = sigmoid_mem[lstm0_sigmod_data_idx2];
     end
     else begin
-        lstm0_sigmod_data_out2 = 0;
+        lstm0_sigmod_data_result2 = 0;
     end
 end
 
 //lstm0-sigmod3
 always @(*) begin
     if(lstm0_sigmod_request3 == 1) begin
-        lstm0_sigmod_data_out3 = sigmoid_mem[lstm0_sigmod_data_in3];
+        lstm0_sigmod_data_result3 = sigmoid_mem[lstm0_sigmod_data_idx3];
     end
     else begin
-        lstm0_sigmod_data_out3 = 0;
+        lstm0_sigmod_data_result3 = 0;
     end
 end
 
 //lstm1-sigmod1
 always @(*) begin
     if(lstm1_sigmod_request1 == 1) begin
-        lstm1_sigmod_data_out1 = sigmoid_mem[lstm1_sigmod_data_in1];
+        lstm1_sigmod_data_result1 = sigmoid_mem[lstm1_sigmod_data_idx1];
     end
     else begin
-        lstm1_sigmod_data_out1 = 0;
+        lstm1_sigmod_data_result1 = 0;
     end
 end
 
 //lstm1-sigmod2
 always @(*) begin
     if(lstm1_sigmod_request2 == 1) begin
-        lstm1_sigmod_data_out2 = sigmoid_mem[lstm1_sigmod_data_in2];
+        lstm1_sigmod_data_result2 = sigmoid_mem[lstm1_sigmod_data_idx2];
     end
     else begin
-        lstm1_sigmod_data_out2 = 0;
+        lstm1_sigmod_data_result2 = 0;
     end
 end
 
 //lstm1-sigmod3
 always @(*) begin
     if(lstm1_sigmod_request3 == 1) begin
-        lstm1_sigmod_data_out3 = sigmoid_mem[lstm1_sigmod_data_in3];
+        lstm1_sigmod_data_result3 = sigmoid_mem[lstm1_sigmod_data_idx3];
     end
     else begin
-        lstm1_sigmod_data_out3 = 0;
+        lstm1_sigmod_data_result3 = 0;
     end
 end
 
 //lstm2-sigmod1
 always @(*) begin
     if(lstm2_sigmod_request1 == 1) begin
-        lstm2_sigmod_data_out1 = sigmoid_mem[lstm2_sigmod_data_in1];
+        lstm2_sigmod_data_result1 = sigmoid_mem[lstm2_sigmod_data_idx1];
     end
     else begin
-        lstm2_sigmod_data_out1 = 0;
+        lstm2_sigmod_data_result1 = 0;
     end
 end
 
 //lstm2-sigmod2
 always @(*) begin
     if(lstm2_sigmod_request2 == 1) begin
-        lstm2_sigmod_data_out2 = sigmoid_mem[lstm2_sigmod_data_in2];
+        lstm2_sigmod_data_result2 = sigmoid_mem[lstm2_sigmod_data_idx2];
     end
     else begin
-        lstm2_sigmod_data_out2 = 0;
+        lstm2_sigmod_data_result2 = 0;
     end
 end
 
 //lstm2-sigmod3
 always @(*) begin
     if(lstm2_sigmod_request3 == 1) begin
-        lstm2_sigmod_data_out3 = sigmoid_mem[lstm2_sigmod_data_in3];
+        lstm2_sigmod_data_result3 = sigmoid_mem[lstm2_sigmod_data_idx3];
     end
     else begin
-        lstm2_sigmod_data_out3 = 0;
+        lstm2_sigmod_data_result3 = 0;
     end
 end
 
 //lstm3-sigmod1
 always @(*) begin
     if(lstm3_sigmod_request1 == 1) begin
-        lstm3_sigmod_data_out1 = sigmoid_mem[lstm3_sigmod_data_in1];
+        lstm3_sigmod_data_result1 = sigmoid_mem[lstm3_sigmod_data_idx1];
     end
     else begin
-        lstm3_sigmod_data_out1 = 0;
+        lstm3_sigmod_data_result1 = 0;
     end
 end
 
 //lstm3-sigmod2
 always @(*) begin
     if(lstm3_sigmod_request2 == 1) begin
-        lstm3_sigmod_data_out2 = sigmoid_mem[lstm3_sigmod_data_in2];
+        lstm3_sigmod_data_result2 = sigmoid_mem[lstm3_sigmod_data_idx2];
     end
     else begin
-        lstm3_sigmod_data_out2 = 0;
+        lstm3_sigmod_data_result2 = 0;
     end
 end
 
 //lstm3-sigmod3
 always @(*) begin
     if(lstm3_sigmod_request3 == 1) begin
-        lstm3_sigmod_data_out3 = sigmoid_mem[lstm3_sigmod_data_in3];
+        lstm3_sigmod_data_result3 = sigmoid_mem[lstm3_sigmod_data_idx3];
     end
     else begin
-        lstm3_sigmod_data_out3 = 0;
+        lstm3_sigmod_data_result3 = 0;
     end
 end
 
@@ -573,6 +575,147 @@ always @(posedge clk or negedge rst_n) begin
     end
 end
 
+reg signed [DATA_WIDTH-1:0] Wi00;
+reg signed [DATA_WIDTH-1:0] Wi01;
+reg signed [DATA_WIDTH-1:0] Wi02;
+reg signed [DATA_WIDTH-1:0] Wi03;
+reg signed [DATA_WIDTH-1:0] Wi10;
+reg signed [DATA_WIDTH-1:0] Wi11;
+reg signed [DATA_WIDTH-1:0] Wi12;
+reg signed [DATA_WIDTH-1:0] Wi13;
+reg signed [DATA_WIDTH-1:0] Wi20;
+reg signed [DATA_WIDTH-1:0] Wi21;
+reg signed [DATA_WIDTH-1:0] Wi22;
+reg signed [DATA_WIDTH-1:0] Wi23;
+reg signed [DATA_WIDTH-1:0] Wi30;
+reg signed [DATA_WIDTH-1:0] Wi31;
+reg signed [DATA_WIDTH-1:0] Wi32;
+reg signed [DATA_WIDTH-1:0] Wi33;
+reg signed [DATA_WIDTH-1:0] Wz00;
+reg signed [DATA_WIDTH-1:0] Wz01;
+reg signed [DATA_WIDTH-1:0] Wz02;
+reg signed [DATA_WIDTH-1:0] Wz03;
+reg signed [DATA_WIDTH-1:0] Wz10;
+reg signed [DATA_WIDTH-1:0] Wz11;
+reg signed [DATA_WIDTH-1:0] Wz12;
+reg signed [DATA_WIDTH-1:0] Wz13;
+reg signed [DATA_WIDTH-1:0] Wz20;
+reg signed [DATA_WIDTH-1:0] Wz21;
+reg signed [DATA_WIDTH-1:0] Wz22;
+reg signed [DATA_WIDTH-1:0] Wz23;
+reg signed [DATA_WIDTH-1:0] Wz30;
+reg signed [DATA_WIDTH-1:0] Wz31;
+reg signed [DATA_WIDTH-1:0] Wz32;
+reg signed [DATA_WIDTH-1:0] Wz33;
+reg signed [DATA_WIDTH-1:0] Wf00;
+reg signed [DATA_WIDTH-1:0] Wf01;
+reg signed [DATA_WIDTH-1:0] Wf02;
+reg signed [DATA_WIDTH-1:0] Wf03;
+reg signed [DATA_WIDTH-1:0] Wf10;
+reg signed [DATA_WIDTH-1:0] Wf11;
+reg signed [DATA_WIDTH-1:0] Wf12;
+reg signed [DATA_WIDTH-1:0] Wf13;
+reg signed [DATA_WIDTH-1:0] Wf20;
+reg signed [DATA_WIDTH-1:0] Wf21;
+reg signed [DATA_WIDTH-1:0] Wf22;
+reg signed [DATA_WIDTH-1:0] Wf23;
+reg signed [DATA_WIDTH-1:0] Wf30;
+reg signed [DATA_WIDTH-1:0] Wf31;
+reg signed [DATA_WIDTH-1:0] Wf32;
+reg signed [DATA_WIDTH-1:0] Wf33;
+reg signed [DATA_WIDTH-1:0] Wo00;
+reg signed [DATA_WIDTH-1:0] Wo01;
+reg signed [DATA_WIDTH-1:0] Wo02;
+reg signed [DATA_WIDTH-1:0] Wo03;
+reg signed [DATA_WIDTH-1:0] Wo10;
+reg signed [DATA_WIDTH-1:0] Wo11;
+reg signed [DATA_WIDTH-1:0] Wo12;
+reg signed [DATA_WIDTH-1:0] Wo13;
+reg signed [DATA_WIDTH-1:0] Wo20;
+reg signed [DATA_WIDTH-1:0] Wo21;
+reg signed [DATA_WIDTH-1:0] Wo22;
+reg signed [DATA_WIDTH-1:0] Wo23;
+reg signed [DATA_WIDTH-1:0] Wo30;
+reg signed [DATA_WIDTH-1:0] Wo31;
+reg signed [DATA_WIDTH-1:0] Wo32;
+reg signed [DATA_WIDTH-1:0] Wo33;
+reg signed [DATA_WIDTH-1:0] Ri00;
+reg signed [DATA_WIDTH-1:0] Ri01;
+reg signed [DATA_WIDTH-1:0] Ri02;
+reg signed [DATA_WIDTH-1:0] Ri03;
+reg signed [DATA_WIDTH-1:0] Ri10;
+reg signed [DATA_WIDTH-1:0] Ri11;
+reg signed [DATA_WIDTH-1:0] Ri12;
+reg signed [DATA_WIDTH-1:0] Ri13;
+reg signed [DATA_WIDTH-1:0] Ri20;
+reg signed [DATA_WIDTH-1:0] Ri21;
+reg signed [DATA_WIDTH-1:0] Ri22;
+reg signed [DATA_WIDTH-1:0] Ri23;
+reg signed [DATA_WIDTH-1:0] Ri30;
+reg signed [DATA_WIDTH-1:0] Ri31;
+reg signed [DATA_WIDTH-1:0] Ri32;
+reg signed [DATA_WIDTH-1:0] Ri33;
+reg signed [DATA_WIDTH-1:0] Rz00;
+reg signed [DATA_WIDTH-1:0] Rz01;
+reg signed [DATA_WIDTH-1:0] Rz02;
+reg signed [DATA_WIDTH-1:0] Rz03;
+reg signed [DATA_WIDTH-1:0] Rz10;
+reg signed [DATA_WIDTH-1:0] Rz11;
+reg signed [DATA_WIDTH-1:0] Rz12;
+reg signed [DATA_WIDTH-1:0] Rz13;
+reg signed [DATA_WIDTH-1:0] Rz20;
+reg signed [DATA_WIDTH-1:0] Rz21;
+reg signed [DATA_WIDTH-1:0] Rz22;
+reg signed [DATA_WIDTH-1:0] Rz23;
+reg signed [DATA_WIDTH-1:0] Rz30;
+reg signed [DATA_WIDTH-1:0] Rz31;
+reg signed [DATA_WIDTH-1:0] Rz32;
+reg signed [DATA_WIDTH-1:0] Rz33;
+reg signed [DATA_WIDTH-1:0] Rf00;
+reg signed [DATA_WIDTH-1:0] Rf01;
+reg signed [DATA_WIDTH-1:0] Rf02;
+reg signed [DATA_WIDTH-1:0] Rf03;
+reg signed [DATA_WIDTH-1:0] Rf10;
+reg signed [DATA_WIDTH-1:0] Rf11;
+reg signed [DATA_WIDTH-1:0] Rf12;
+reg signed [DATA_WIDTH-1:0] Rf13;
+reg signed [DATA_WIDTH-1:0] Rf20;
+reg signed [DATA_WIDTH-1:0] Rf21;
+reg signed [DATA_WIDTH-1:0] Rf22;
+reg signed [DATA_WIDTH-1:0] Rf23;
+reg signed [DATA_WIDTH-1:0] Rf30;
+reg signed [DATA_WIDTH-1:0] Rf31;
+reg signed [DATA_WIDTH-1:0] Rf32;
+reg signed [DATA_WIDTH-1:0] Rf33;
+reg signed [DATA_WIDTH-1:0] Ro00;
+reg signed [DATA_WIDTH-1:0] Ro01;
+reg signed [DATA_WIDTH-1:0] Ro02;
+reg signed [DATA_WIDTH-1:0] Ro03;
+reg signed [DATA_WIDTH-1:0] Ro10;
+reg signed [DATA_WIDTH-1:0] Ro11;
+reg signed [DATA_WIDTH-1:0] Ro12;
+reg signed [DATA_WIDTH-1:0] Ro13;
+reg signed [DATA_WIDTH-1:0] Ro20;
+reg signed [DATA_WIDTH-1:0] Ro21;
+reg signed [DATA_WIDTH-1:0] Ro22;
+reg signed [DATA_WIDTH-1:0] Ro23;
+reg signed [DATA_WIDTH-1:0] Ro30;
+reg signed [DATA_WIDTH-1:0] Ro31;
+reg signed [DATA_WIDTH-1:0] Ro32;
+reg signed [DATA_WIDTH-1:0] Ro33;
+reg signed [DATA_WIDTH-1:0] pi0;
+reg signed [DATA_WIDTH-1:0] pf0;
+reg signed [DATA_WIDTH-1:0] po0;
+reg signed [DATA_WIDTH-1:0] pi1;
+reg signed [DATA_WIDTH-1:0] pf1;
+reg signed [DATA_WIDTH-1:0] po1;
+reg signed [DATA_WIDTH-1:0] pi2;
+reg signed [DATA_WIDTH-1:0] pf2;
+reg signed [DATA_WIDTH-1:0] po2;
+reg signed [DATA_WIDTH-1:0] pi3;
+reg signed [DATA_WIDTH-1:0] pf3;
+reg signed [DATA_WIDTH-1:0] po3;
+
 assign Wi0 = {Wi03, Wi02, Wi01, Wi00};
 assign Wz0 = {Wz03, Wz02, Wz01, Wz00};
 assign Wf0 = {Wf03, Wf02, Wf01, Wf00};
@@ -805,14 +948,6 @@ always @(posedge clk or negedge rst_n) begin
         //po3
         po3 <= 8'b10110110;
     end
-    else
-
 end
 
-
-
 endmodule
-
-
-
-

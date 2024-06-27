@@ -2,7 +2,7 @@
 .PHONY: vcs verdi clean
 
 #compile command 
-VCS	=	vcs +v2k  -timescale=1ns/1ps	\
+VCS	=	vcs +v2k -sverilog -timescale=1ns/1ps	\
 			-full64	\
 			-R 		\
 			-debug_access+all	\
@@ -10,8 +10,8 @@ VCS	=	vcs +v2k  -timescale=1ns/1ps	\
 			+mindelays	\
 			-negdelay	\
 			+neg_tchk	\
-			-l vcs.log\
-      +incdir+/data2/class/chenh/chenh35/tinyriscv/sID/rtl/core/
+			-l vcs.log
+    #   +incdir+/data2/class/chenh/chenh35/tinyriscv/sID/rtl/core/
 
 VERDI=Verdi-Ultra -f filelist.f   \
 		-ssf lstm_top.fsdb    \

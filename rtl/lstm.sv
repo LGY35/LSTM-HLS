@@ -236,11 +236,12 @@ end
 reg [REG_WIDTH-1:0] r1_0, r1_1, r1_2, r1_3;
 // reg1
 always @(posedge clk or negedge rst_n) begin
-    if(rst_n == 1'b0)
+    if(rst_n == 1'b0) begin
         r1 <= 0;
         sigmod_data_out1 <= 0;
-        sigmod_request1 <= 0; 
-    else 
+        sigmod_request1 <= 0;
+    end 
+    else begin
         case(curr_state)
             BUSY:
             case(counter)
@@ -305,6 +306,7 @@ always @(posedge clk or negedge rst_n) begin
             default:
                 r1 <= 0;
         endcase
+    end
 end
 
 reg [REG_WIDTH-1:0] r2_0, r2_1, r2_2, r2_3;
@@ -383,10 +385,11 @@ end
 reg [REG_WIDTH-1:0] r3_0, r3_1, r3_2, r3_3;
 // reg3
 always @(posedge clk or negedge rst_n) begin
-    if(rst_n == 1'b0)
+    if(rst_n == 1'b0) begin
         r3 <= 0;
         sigmod_data_out3 <= 0;
-        sigmod_request3 <= 0;  
+        sigmod_request3 <= 0; 
+    end 
     else 
         case(curr_state)
             BUSY:
