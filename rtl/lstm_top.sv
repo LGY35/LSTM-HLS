@@ -23,15 +23,15 @@ reg signed [DATA_WIDTH-1:0] y_in1;
 reg signed [DATA_WIDTH-1:0] y_in2;
 reg signed [DATA_WIDTH-1:0] y_in3;
 //y_out
-reg signed [DATA_WIDTH-1:0] y_out0;
-reg signed [DATA_WIDTH-1:0] y_out1;
-reg signed [DATA_WIDTH-1:0] y_out2;
-reg signed [DATA_WIDTH-1:0] y_out3;
-//y_t暂存，只有valid之后才传递给y_out
-reg signed [DATA_WIDTH-1:0] y_t0;
-reg signed [DATA_WIDTH-1:0] y_t1;
-reg signed [DATA_WIDTH-1:0] y_t2;
-reg signed [DATA_WIDTH-1:0] y_t3;
+// reg signed [DATA_WIDTH-1:0] y_out0;
+// reg signed [DATA_WIDTH-1:0] y_out1;
+// reg signed [DATA_WIDTH-1:0] y_out2;
+// reg signed [DATA_WIDTH-1:0] y_out3;
+//与lstmi的接口，只有valid之后才传递给y_out
+wire signed [DATA_WIDTH-1:0] y_t0;
+wire signed [DATA_WIDTH-1:0] y_t1;
+wire signed [DATA_WIDTH-1:0] y_t2;
+wire signed [DATA_WIDTH-1:0] y_t3;
 //valid
 reg valid0;
 reg valid1;
@@ -133,14 +133,24 @@ lstm lstm3(clk,rst_n,start,x0,x1,x2,x3,y_in0,y_in1,y_in2,y_in3,Wi3,Wz3,Wf3,Wo3,R
 //输入与输出的端口对应
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 0) begin
-        x0 = x[0];
-        x1 = x[1];
-        x2 = x[2];
-        x3 = x[3];
-        y_in0 = y_in[0];
-        y_in1 = y_in[1];
-        y_in2 = y_in[2];
-        y_in3 = y_in[3];
+        x0 <= x[0];
+        x1 <= x[1];
+        x2 <= x[2];
+        x3 <= x[3];
+        y_in0 <= y_in[0];
+        y_in1 <= y_in[1];
+        y_in2 <= y_in[2];
+        y_in3 <= y_in[3];
+    end
+    else begin
+        x0 <= x[0];
+        x1 <= x[1];
+        x2 <= x[2];
+        x3 <= x[3];
+        y_in0 <= y_in[0];
+        y_in1 <= y_in[1];
+        y_in2 <= y_in[2];
+        y_in3 <= y_in[3];
     end
 end
 
@@ -157,29 +167,36 @@ end
 //输出y
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 0) begin
-        y_out0 <= 0;
-        y_out1 <= 0;
-        y_out2 <= 0;
-        y_out3 <= 0;
+        // y_out0 <= 0;
+        // y_out1 <= 0;
+        // y_out2 <= 0;
+        // y_out3 <= 0;
+        y_out[0] <= 0;
+        y_out[1] <= 0;
+        y_out[2] <= 0;
+        y_out[3] <= 0;
     end  
     else begin
         if(valid0 == 1)
-            y_out0 <= y_t0;
+            y_out[0] <= y_t0;
         else
-            y_out0 <= 0;
+            y_out[0] <= 0;
         if(valid1 == 1)
-            y_out1 <= y_t1;
+            y_out[1] <= y_t1;
         else
-            y_out1 <= 0;
+            y_out[1] <= 0;
         if(valid2 == 1)
-            y_out2 <= y_t2;
+            y_out[2] <= y_t2;
         else
-            y_out2 <= 0;
+            y_out[2] <= 0;
         if(valid3 == 1)
-            y_out3 <= y_t3;
+            y_out[3] <= y_t3;
         else
-            y_out3 <= 0;
-        y_out <= {y_out3,y_out2,y_out1,y_out0};
+            y_out[3] <= 0;
+        // y_out[0] <= y_out0;
+        // y_out[1] <= y_out1;
+        // y_out[2] <= y_out2;
+        // y_out[3] <= y_out3;
     end
 end
 
@@ -949,5 +966,6 @@ always @(posedge clk or negedge rst_n) begin
         po3 <= 8'b10110110;
     end
 end
+
 
 endmodule
