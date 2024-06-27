@@ -38,47 +38,47 @@ reg valid2;
 reg valid3;
 
 //-----------------------------sigmod-----------------------------
-//lstm0
+//lstm0  in out是相对于lstm unit而言
 reg signed[DATA_WIDTH-1:0] sigmoid_mem [0:255];
-reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_in1;
-reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_in2;
-reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_in3;
-reg lstm0_sigmod_request1;
-reg lstm0_sigmod_request2;
-reg lstm0_sigmod_request3;
-reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_out1;
-reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_out2;
-reg signed[DATA_WIDTH-1:0] lstm0_sigmod_data_out3;
+wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_in1;
+wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_in2;
+wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_in3;
+wire lstm0_sigmod_request1;
+wire lstm0_sigmod_request2;
+wire lstm0_sigmod_request3;
+wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_out1;
+wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_out2;
+wire signed[DATA_WIDTH-1:0] lstm0_sigmod_data_out3;
 //lstm1
-reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_in1;
-reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_in2;
-reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_in3;
-reg lstm1_sigmod_request1;
-reg lstm1_sigmod_request2;
-reg lstm1_sigmod_request3;
-reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_out1;
-reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_out2;
-reg signed[DATA_WIDTH-1:0] lstm1_sigmod_data_out3;
+wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_in1;
+wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_in2;
+wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_in3;
+wire lstm1_sigmod_request1;
+wire lstm1_sigmod_request2;
+wire lstm1_sigmod_request3;
+wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_out1;
+wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_out2;
+wire signed[DATA_WIDTH-1:0] lstm1_sigmod_data_out3;
 //lstm2
-reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_in1;
-reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_in2;
-reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_in3;
-reg lstm2_sigmod_request1;
-reg lstm2_sigmod_request2;
-reg lstm2_sigmod_request3;
-reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_out1;
-reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_out2;
-reg signed[DATA_WIDTH-1:0] lstm2_sigmod_data_out3;
+wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_in1;
+wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_in2;
+wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_in3;
+wire lstm2_sigmod_request1;
+wire lstm2_sigmod_request2;
+wire lstm2_sigmod_request3;
+wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_out1;
+wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_out2;
+wire signed[DATA_WIDTH-1:0] lstm2_sigmod_data_out3;
 //lstm3
-reg signed[DATA_WIDTH-1:0] lstm3_sigmod_data_in1;
-reg signed[DATA_WIDTH-1:0] lstm3_sigmod_data_in2;
-reg signed[DATA_WIDTH-1:0] lstm3_sigmod_data_in3;
-reg lstm3_sigmod_request1;
-reg lstm3_sigmod_request2;
-reg lstm3_sigmod_request3;
-reg signed[DATA_WIDTH-1:0] lstm3_sigmod_data_out1;
-reg signed[DATA_WIDTH-1:0] lstm3_sigmod_data_out2;
-reg signed[DATA_WIDTH-1:0] lstm3_sigmod_data_out3;
+wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_in1;
+wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_in2;
+wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_in3;
+wire lstm3_sigmod_request1;
+wire lstm3_sigmod_request2;
+wire lstm3_sigmod_request3;
+wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_out1;
+wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_out2;
+wire signed[DATA_WIDTH-1:0] lstm3_sigmod_data_out3;
 
 //------------------------weight-----------------------------
 //lstm0
@@ -181,10 +181,128 @@ always @(posedge clk or negedge rst_n) begin
     end
 end
 
-//sigmod查找
+//*********************************sigmod查找*******************************
+//从lstm单元中传出来的是带符号的8bit，比如-128，对应的无符号8bit就是128，就是，如果得到的负数最大，就是-128，对应的数也是最小的，即sigmod[128]的数
+//lstm0-sigmod1
 always @(*) begin
-    
+    if(lstm0_sigmod_request1 == 1) begin
+        lstm0_sigmod_data_out1 = sigmoid_mem[lstm0_sigmod_data_in1];
+    end
+    else begin
+        lstm0_sigmod_data_out1 = 0;
+    end
 end
+
+//lstm0-sigmod2
+always @(*) begin
+    if(lstm0_sigmod_request2 == 1) begin
+        lstm0_sigmod_data_out2 = sigmoid_mem[lstm0_sigmod_data_in2];
+    end
+    else begin
+        lstm0_sigmod_data_out2 = 0;
+    end
+end
+
+//lstm0-sigmod3
+always @(*) begin
+    if(lstm0_sigmod_request3 == 1) begin
+        lstm0_sigmod_data_out3 = sigmoid_mem[lstm0_sigmod_data_in3];
+    end
+    else begin
+        lstm0_sigmod_data_out3 = 0;
+    end
+end
+
+//lstm1-sigmod1
+always @(*) begin
+    if(lstm1_sigmod_request1 == 1) begin
+        lstm1_sigmod_data_out1 = sigmoid_mem[lstm1_sigmod_data_in1];
+    end
+    else begin
+        lstm1_sigmod_data_out1 = 0;
+    end
+end
+
+//lstm1-sigmod2
+always @(*) begin
+    if(lstm1_sigmod_request2 == 1) begin
+        lstm1_sigmod_data_out2 = sigmoid_mem[lstm1_sigmod_data_in2];
+    end
+    else begin
+        lstm1_sigmod_data_out2 = 0;
+    end
+end
+
+//lstm1-sigmod3
+always @(*) begin
+    if(lstm1_sigmod_request3 == 1) begin
+        lstm1_sigmod_data_out3 = sigmoid_mem[lstm1_sigmod_data_in3];
+    end
+    else begin
+        lstm1_sigmod_data_out3 = 0;
+    end
+end
+
+//lstm2-sigmod1
+always @(*) begin
+    if(lstm2_sigmod_request1 == 1) begin
+        lstm2_sigmod_data_out1 = sigmoid_mem[lstm2_sigmod_data_in1];
+    end
+    else begin
+        lstm2_sigmod_data_out1 = 0;
+    end
+end
+
+//lstm2-sigmod2
+always @(*) begin
+    if(lstm2_sigmod_request2 == 1) begin
+        lstm2_sigmod_data_out2 = sigmoid_mem[lstm2_sigmod_data_in2];
+    end
+    else begin
+        lstm2_sigmod_data_out2 = 0;
+    end
+end
+
+//lstm2-sigmod3
+always @(*) begin
+    if(lstm2_sigmod_request3 == 1) begin
+        lstm2_sigmod_data_out3 = sigmoid_mem[lstm2_sigmod_data_in3];
+    end
+    else begin
+        lstm2_sigmod_data_out3 = 0;
+    end
+end
+
+//lstm3-sigmod1
+always @(*) begin
+    if(lstm3_sigmod_request1 == 1) begin
+        lstm3_sigmod_data_out1 = sigmoid_mem[lstm3_sigmod_data_in1];
+    end
+    else begin
+        lstm3_sigmod_data_out1 = 0;
+    end
+end
+
+//lstm3-sigmod2
+always @(*) begin
+    if(lstm3_sigmod_request2 == 1) begin
+        lstm3_sigmod_data_out2 = sigmoid_mem[lstm3_sigmod_data_in2];
+    end
+    else begin
+        lstm3_sigmod_data_out2 = 0;
+    end
+end
+
+//lstm3-sigmod3
+always @(*) begin
+    if(lstm3_sigmod_request3 == 1) begin
+        lstm3_sigmod_data_out3 = sigmoid_mem[lstm3_sigmod_data_in3];
+    end
+    else begin
+        lstm3_sigmod_data_out3 = 0;
+    end
+end
+
 
 /****************************************************
 sigmod查找表

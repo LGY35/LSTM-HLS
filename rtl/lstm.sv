@@ -506,7 +506,7 @@ always @(posedge clk or negedge rst_n) begin
             BUSY:
             case(counter)
                 4:  
-                    c <= r1 + r2;
+                    c <= (r1 + r2) >> 7; //忽略最低位的数据
                 default:;
             endcase 
             default:
