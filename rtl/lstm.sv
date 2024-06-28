@@ -1,6 +1,56 @@
+/***********************************************************************
+注意事项：
+1. 乘法归一化问题：
+有符号数小数(-1,1)之间，使用8bit有符号数表示，那么对应的
+-1对应8bit的-128，1对应8bit的127，相当于乘了128倍。
+举例：0.5用8bit表示为64，也就是乘了128，那么0.5 * 0.5 = 0.25
+如果直接64 * 64 = 4096，已经超了，所以需要 >> 7，也就是除以128，得到32，正好是0.25(就是说，c = a*b，但是我们是c = a*128 * b*128，多了一个128，所以必然要除一下)
+
+2. sigmoid查找表的索引归一化。
+sigmoid的查找表是将-2到2的横坐标映射到了256个地址上。
+现在要用r1进行索引。假设用来索引的数是：c = a * b. （这里小写字母代表小数，大写字母代表二进制数） 假设A = a * 128, B = b * 128 ，那么应该有C = c * 128
+那么，我们在进行索引时，已经得到了 C = A * B >>7 = a * 128 * b * 128 /128 = a * b * 128 = c * 128.
+与第一点不同的是，因为这里sigmoid是把 -2 到 2 进行了映射，所以 我们拿来索引的r1 = c * 128  不同之处在于，c是 (-2,2)，之前的那个是(-1,1)
+sigmoid的地址里面是同样的-128到127，而现在得到的r1 = (-2,2) * 128 实际上是 (-256,255)，所以还需要除以2，这就有了下面的sigmoid_data_out = [7:1]，也就是再除以2
+原来的判断条件那里用的r1 > 32767，因为r1提前除以了128，所以32767/128 = 256.
+
+3.有符号数的移位：
+    >> 这是逻辑移位，高位补零，在有符号数运算中是错误的。
+        例如，r1 = r1 * r2，两个都是有符号数，得到的结果应该为FFFFFFF1，结果由于逻辑移位，高位补零，就成了1FFFFFF，正负变了。
+    >>> 三个> 这是算术移位，高位补符号位。这才是正确的。
+
+4.tb
+    (1)tb里面给测试激励，最好不要用always
+    (2)不要写#(CYCLE*2)，对不齐时钟，直接写@(posedge clk) begin end
+        要多次执行，就再加一层forever或者是repeat：
+        如：#(CYCLE*150);-> repeat(150)@(posedge clk);
+        repeat(58)@(posedge clk)beginif(xxx)begin
+                y_in[o]<=y_out
+                y_in[1]<=y_out[1]
+                y_in[2 ]<=y_out[2];y_in[3 ]<=y_out[3];
+            end
+        end
+        
+debug：
+1. C代码实现dfg，把各个中间结果输出，看哪里错误。别怕麻烦。
+2. TODO: 很多代码都是冗余，可以用简单的方式实现，task等。
+    always @(posedge clk or negedge rst_n) begin
+        if(rst_n ==0)begin
+            for(int i=0;i<256;i++) begin
+                sigmod1_mem[i]<=1/(1+$exp(-i));
+        end
+    end
+3. 
+
+所有的verilog语句都可以总结为，什么赋值方式，什么时刻发生，赋值语句本身.
+赋值方式就是持续，还是一次性的.
+发生时刻由#，或者@决定
+************************************************************************/
+
+
 module lstm
 #(  parameter DATA_WIDTH = 8,  
-    parameter REG_WIDTH = 32    //TODO: 位宽对结果的影响
+    parameter REG_WIDTH = 16    //TODO: 位宽对结果的影响-------实测32和16输出结果相同
 )
 (
     // ------------input-----------------   
@@ -39,7 +89,6 @@ module lstm
     output reg valid,   //输出完成
     output reg signed [DATA_WIDTH-1:0] y
 );
-
 
 //权重
 reg signed [DATA_WIDTH-1:0] Wi0;
@@ -155,71 +204,63 @@ always @(*) begin
             case(counter)
                 9: begin    
                     // r1 计算sigmod查找表。输出为 -128 至 127 的 8bit 有符号数
-                    begin   // r1是由两个8bit有符号数相乘得到，不会超过16bit，而低位可能引入噪声或不重要的信息，所以选择中间的7bit
-                        if(r1 > 32767)
+                    begin   
+                        // if(r1 > 32767)
+                        if(r1 > 255)
                             sigmod_data_out1 = 127;
-                        else if(r1 < -32768)
+                        else if(r1 < -256)//if(r1 < -32768)
                             sigmod_data_out1 = -128;
                         else    
                             // sigmod_data_out1[6:0] = r1[6:0];  
-                            sigmod_data_out1[6:0] = r1[7:1];            //r1已经是除了128了，还需要除以2
+                            sigmod_data_out1[6:0] = r1[7:1];            //r1已经是已经除了128了，还需要除以2
                             sigmod_data_out1[7] = r1[REG_WIDTH-1];
-                            // sigmod_data_out1 = r1[8:1];  
                     end
                     sigmod_request1 = 1;
                     // r2 查找
                     begin
-                        if(r2 > 32767)
+                        if(r1 > 255)
                             sigmod_data_out2 = 127;
-                        else if(r2 < -32768)
+                        else if(r1 < -256)
                             sigmod_data_out2 = -128;
                         else    
-                            // sigmod_data_out2[6:0] = r2[6:0];
                             sigmod_data_out2[6:0] = r2[7:1];
                             sigmod_data_out2[7] = r2[REG_WIDTH-1];
-                            // sigmod_data_out2 = r2[8:1];  
                     end
                     sigmod_request2 = 1;
                     // r3 查找
                     begin
-                        if(r3 > 32767)
+                        if(r1 > 255)
                             sigmod_data_out3 = 127;
-                        else if(r3 < -32768)
+                        else if(r1 < -256)
                             sigmod_data_out3 = -128;
                         else    
-                            // sigmod_data_out3[6:0] = r3[6:0];
                             sigmod_data_out3[6:0] = r3[7:1];
                             sigmod_data_out3[7] = r3[REG_WIDTH-1];
-                            // sigmod_data_out3 = r3[8:1];  
                     end
                     sigmod_request3 = 1;
                 end
                 12: begin
                     // r2 查找
                     begin
-                        if(r3 > 32767)
+                        if(r1 > 255)
                             sigmod_data_out2 = 127;
-                        else if(r3 < -32768)
+                        else if(r1 < -256)
                             sigmod_data_out2 = -128;
                         else    
-                            // sigmod_data_out2[6:0] = r3[6:0];
                             sigmod_data_out2[6:0] = r3[7:1];
                             sigmod_data_out2[7] = r3[REG_WIDTH-1];
-                            // sigmod_data_out2 = r3[8:1];  
                     end
                     sigmod_request2 = 1;
                 end
                 14: begin
                     begin
-                        if(r1 > 32767)
+                        if(r1 > 255)
                             sigmod_data_out1 = 127;
-                        else if(r1 < -32768)
+                        else if(r1 < -256)
                             sigmod_data_out1 = -128;
                         else    
-                            // sigmod_data_out1[6:0] = r1[6:0];
                             sigmod_data_out1[6:0] = r1[7:1];
                             sigmod_data_out1[7] = r1[REG_WIDTH-1];
-                            // sigmod_data_out1 = r1[8:1];  
                     end
                     sigmod_request1 = 1;
                 end

@@ -34,8 +34,6 @@ reg signed [DATA_WIDTH-1:0] X40_IN;
 reg signed [DATA_WIDTH-1:0] X41_IN;
 reg signed [DATA_WIDTH-1:0] X42_IN;
 reg signed [DATA_WIDTH-1:0] X43_IN;
-// reg [2:0]t;
-// reg [5:0]cnt;
 
 // Instantiate the Unit Under Test (UUT)
 lstm_top #(
@@ -62,8 +60,6 @@ initial begin
     // Initialize Inputs
     rst_n = 0;
     start = 0;
-    // t = 4;
-    // cnt=0;
     x[0] = 8'b00100101;
     x[1] = 8'b00110101;
     x[2] = 8'b11110101;
@@ -97,7 +93,7 @@ initial begin
     start = 1;
     repeat(2)@(posedge clk);
     start = 0;
-    repeat(50)@(posedge clk) begin
+    repeat(30)@(posedge clk) begin
         if(finished == 1) begin
             y_in[0] <= y_out[0];
             y_in[1] <= y_out[1];
@@ -106,7 +102,6 @@ initial begin
         end
     end
     
-
     //第二次
     x[0] = 8'b00101101;
     x[1] = 8'b10111100;
@@ -115,7 +110,7 @@ initial begin
     start = 1;
     repeat(2)@(posedge clk);
     start = 0;
-    repeat(50)@(posedge clk) begin
+    repeat(30)@(posedge clk) begin
         if(finished == 1) begin
             y_in[0] <= y_out[0];
             y_in[1] <= y_out[1];
@@ -132,7 +127,7 @@ initial begin
     start = 1;
     repeat(2)@(posedge clk);
     start = 0;
-    repeat(50)@(posedge clk) begin
+    repeat(30)@(posedge clk) begin
         if(finished == 1) begin
             y_in[0] <= y_out[0];
             y_in[1] <= y_out[1];
@@ -149,7 +144,7 @@ initial begin
     start = 1;
     repeat(2)@(posedge clk);
     start = 0;
-    repeat(50)@(posedge clk) begin
+    repeat(30)@(posedge clk) begin
         if(finished == 1) begin
             y_in[0] <= y_out[0];
             y_in[1] <= y_out[1];
@@ -166,7 +161,7 @@ initial begin
     start = 1;
     repeat(2)@(posedge clk);
     start = 0;
-    repeat(50)@(posedge clk) begin
+    repeat(30)@(posedge clk) begin
         if(finished == 1) begin
             y_in[0] <= y_out[0];
             y_in[1] <= y_out[1];
@@ -176,7 +171,7 @@ initial begin
     end
 
     // Finish the simulation
-    repeat(150)@(posedge clk);
+    repeat(80)@(posedge clk);
     $finish;
 end
 
@@ -195,63 +190,3 @@ initial begin
 end
 
 endmodule
-
-// //用于迭代
-// always @(posedge clk) begin
-//     if(cnt < 15)
-//         cnt <= cnt + 1;
-//     else
-//         cnt <= 15;
-// end
-
-// // 产生start信号
-// always @(posedge clk) begin
-//     if(cnt == 12 || finished == 1)  //产生start为cnt=12，即第一次，或者finished等于1，上次结束
-//         start <= 1;
-//     else
-//         start <= 0;
-// end
-
-// always @(posedge clk) begin
-//     if(finished == 1)   //如果四个都完成了
-//         t <= t - 1;
-//     if(t == 0)
-//         t <= 0;     //停止运行
-// end
-// always @(posedge clk) begin
-//     if(finished == 1)
-//     begin
-//         case(t)
-//         4:
-//         begin
-//             x[0] <= X10_IN;
-//             x[1] <= X11_IN;
-//             x[2] <= X12_IN;
-//             x[3] <= X13_IN;
-//         end
-//         3:
-//         begin
-//             x[0] <= X20_IN;
-//             x[1] <= X21_IN;
-//             x[2] <= X22_IN;
-//             x[3] <= X23_IN;
-//         end
-//         2:
-//         begin
-//             x[0] <= X30_IN;
-//             x[1] <= X31_IN;
-//             x[2] <= X32_IN;
-//             x[3] <= X33_IN;
-//         end
-//         1:
-//         begin
-//             x[0] <= X40_IN;
-//             x[1] <= X41_IN;
-//             x[2] <= X42_IN;
-//             x[3] <= X43_IN;
-//         end
-//         default:;
-//         endcase
-//     end
-// end
-
