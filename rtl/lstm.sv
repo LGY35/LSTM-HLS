@@ -161,8 +161,10 @@ always @(*) begin
                         else if(r1 < -32768)
                             sigmod_data_out1 = -128;
                         else    
-                            sigmod_data_out1[6:0] = r1[14:8];  
+                            // sigmod_data_out1[6:0] = r1[6:0];  
+                            sigmod_data_out1[6:0] = r1[7:1];            //r1已经是除了128了，还需要除以2
                             sigmod_data_out1[7] = r1[REG_WIDTH-1];
+                            // sigmod_data_out1 = r1[8:1];  
                     end
                     sigmod_request1 = 1;
                     // r2 查找
@@ -172,8 +174,10 @@ always @(*) begin
                         else if(r2 < -32768)
                             sigmod_data_out2 = -128;
                         else    
-                            sigmod_data_out2[6:0] = r2[14:8];
+                            // sigmod_data_out2[6:0] = r2[6:0];
+                            sigmod_data_out2[6:0] = r2[7:1];
                             sigmod_data_out2[7] = r2[REG_WIDTH-1];
+                            // sigmod_data_out2 = r2[8:1];  
                     end
                     sigmod_request2 = 1;
                     // r3 查找
@@ -183,21 +187,25 @@ always @(*) begin
                         else if(r3 < -32768)
                             sigmod_data_out3 = -128;
                         else    
-                            sigmod_data_out3[6:0] = r3[14:8];
+                            // sigmod_data_out3[6:0] = r3[6:0];
+                            sigmod_data_out3[6:0] = r3[7:1];
                             sigmod_data_out3[7] = r3[REG_WIDTH-1];
+                            // sigmod_data_out3 = r3[8:1];  
                     end
                     sigmod_request3 = 1;
                 end
                 12: begin
                     // r2 查找
                     begin
-                        if(r2 > 32767)
+                        if(r3 > 32767)
                             sigmod_data_out2 = 127;
-                        else if(r2 < -32768)
+                        else if(r3 < -32768)
                             sigmod_data_out2 = -128;
                         else    
-                            sigmod_data_out2[6:0] = r2[14:8];
-                            sigmod_data_out2[7] = r2[REG_WIDTH-1];
+                            // sigmod_data_out2[6:0] = r3[6:0];
+                            sigmod_data_out2[6:0] = r3[7:1];
+                            sigmod_data_out2[7] = r3[REG_WIDTH-1];
+                            // sigmod_data_out2 = r3[8:1];  
                     end
                     sigmod_request2 = 1;
                 end
@@ -208,8 +216,10 @@ always @(*) begin
                         else if(r1 < -32768)
                             sigmod_data_out1 = -128;
                         else    
-                            sigmod_data_out1[6:0] = r1[14:8];
+                            // sigmod_data_out1[6:0] = r1[6:0];
+                            sigmod_data_out1[6:0] = r1[7:1];
                             sigmod_data_out1[7] = r1[REG_WIDTH-1];
+                            // sigmod_data_out1 = r1[8:1];  
                     end
                     sigmod_request1 = 1;
                 end
@@ -233,7 +243,7 @@ end
 //----------状态机第三段：各个寄存器的状态----------------------
 //4维向量内积转换为：2个（2个标量内积和一个加法器），共2周期*2 = 4周期
 
-reg [REG_WIDTH-1:0] r1_0, r1_1, r1_2, r1_3;
+reg signed [REG_WIDTH-1:0] r1_0, r1_1, r1_2, r1_3;  //必须声明signed
 // reg1
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 1'b0) begin
@@ -260,7 +270,7 @@ always @(posedge clk or negedge rst_n) begin
                 2:  
                     r1_2 <= r1_2 + r1_3;
                 3:
-                    r1 <=  r1_0 + r1_2; // 第四个控制步算完内积
+                    r1 <=  (r1_0 + r1_2) >>> 7; // 第四个控制步算完内积
             //第2个内积
                 4:begin 
                     r1_0 <= Wz0 * x0;
@@ -274,7 +284,7 @@ always @(posedge clk or negedge rst_n) begin
                 6:  
                     r1_2 <= r1_2 + r1_3;
                 7:
-                    r1 <=  r1_0 + r1_2; // 第四个控制步算完内积
+                    r1 <=  (r1_0 + r1_2) >>> 7; // 第四个控制步算完内积
             //第3个内积，包含其他运算
                 8:begin
                     r1 <= r1 + r2;
@@ -288,11 +298,11 @@ always @(posedge clk or negedge rst_n) begin
                     r1_3 <= Wo3 * x3;
                 end
                 10:begin  
-                    r1 <= r1 * r2;
+                    r1 <= (r1 * r2) >>> 7;
                     r1_2 <= r1_2 + r1_3;
                 end
                 11:
-                    r1 <=  r1_0 + r1_2; // 第四个控制步算完内积
+                    r1 <=  (r1_0 + r1_2) >>> 7; // 第四个控制步算完内积
                 12:
                     r1 <=  r1 + r2;
                 13:begin
@@ -308,7 +318,7 @@ always @(posedge clk or negedge rst_n) begin
     end
 end
 
-reg [REG_WIDTH-1:0] r2_0, r2_1, r2_2, r2_3;
+reg signed [REG_WIDTH-1:0] r2_0, r2_1, r2_2, r2_3;
 // reg2
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 1'b0) begin
@@ -335,7 +345,7 @@ always @(posedge clk or negedge rst_n) begin
                 2:  
                     r2_2 <= r2_2 + r2_3;
                 3:
-                    r2 <=  r2_0 + r2_2; // 第四个控制步算完内积
+                    r2 <=  (r2_0 + r2_2) >>> 7; // 第四个控制步算完内积
             //第2个内积
                 4:begin 
                     r2_0 <= Rz0 * y_in0;
@@ -349,7 +359,7 @@ always @(posedge clk or negedge rst_n) begin
                 6:  
                     r2_2 <= r2_2 + r2_3;
                 7:
-                    r2 <=  r2_0 + r2_2; // 第四个控制步算完内积
+                    r2 <=  (r2_0 + r2_2) >>> 7; // 第四个控制步算完内积
             //第3个内积
                 8:begin 
                     r2 <= r4 + r5;
@@ -363,11 +373,11 @@ always @(posedge clk or negedge rst_n) begin
                     r2_3 <= Ro3 * y_in3;
                 end
                 10:begin  
-                    r2 <= c * r3;
+                    r2 <= (c * r3) >>> 7;
                     r2_2 <= r2_2 + r2_3;
                 end
                 11:begin
-                    r2 <=  r2_0 + r2_2; // 第四个控制步算完内积
+                    r2 <=  (r2_0 + r2_2) >>> 7; // 第四个控制步算完内积
                 end
                 12:
                     r2 <= sigmod_data_in2;
@@ -380,7 +390,7 @@ always @(posedge clk or negedge rst_n) begin
         endcase
 end
 
-reg [REG_WIDTH-1:0] r3_0, r3_1, r3_2, r3_3;
+reg signed [REG_WIDTH-1:0] r3_0, r3_1, r3_2, r3_3;
 // reg3
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 1'b0) begin
@@ -406,9 +416,9 @@ always @(posedge clk or negedge rst_n) begin
                 2:  
                     r3_2 <= r3_2 + r3_3;
                 3:
-                    r3 <=  r3_0 + r3_2; // 第四个控制步算完内积
+                    r3 <=  (r3_0 + r3_2) >>> 7; // 第四个控制步算完内积
                 4: 
-                    r3 <= c * pf;
+                    r3 <= (c * pf) >>> 7;
                 8:
                     r3 <= r3 + r6;
                 9:
@@ -416,7 +426,7 @@ always @(posedge clk or negedge rst_n) begin
                 11: 
                     r3 <= r1 + r2;
                 12: 
-                    r3 <= po * r4;
+                    r3 <= (po * r4) >>> 7;
                 default:;
             endcase 
             default:
@@ -424,7 +434,7 @@ always @(posedge clk or negedge rst_n) begin
         endcase
 end
 
-reg [REG_WIDTH-1:0] r4_0, r4_1, r4_2, r4_3;
+reg signed [REG_WIDTH-1:0] r4_0, r4_1, r4_2, r4_3;
 // reg4
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 1'b0) begin
@@ -450,7 +460,7 @@ always @(posedge clk or negedge rst_n) begin
                 2:  
                     r4_2 <= r4_2 + r4_3;
                 3:
-                    r4 <=  r4_0 + r4_2; // 第四个控制步算完内积
+                    r4 <=  (r4_0 + r4_2) >>> 7; // 第四个控制步算完内积
                 4,11: 
                     r4 <= r1 + r2;
                 default:;
@@ -470,7 +480,7 @@ always @(posedge clk or negedge rst_n) begin
             BUSY:
             case(counter)
                 4:  
-                    r5 <= c * pi;
+                    r5 <= (c * pi) >>> 7;
                 default:;
             endcase 
             default:
@@ -504,7 +514,7 @@ always @(posedge clk or negedge rst_n) begin
             BUSY:
             case(counter)
                 11:  begin
-                    c <= (r1 + r2) >> 7; //忽略最低位的数据
+                    c <= (r1 + r2);//>> 7; 
                 end
                 default:;
             endcase 
@@ -523,7 +533,7 @@ always @(posedge clk or negedge rst_n) begin
             BUSY:
             case(counter)
                 15:begin
-                    y <= (r1 * r2)>> 7; //忽略最低位的数据
+                    y <= (r1 * r2) >>> 7; 
                     valid <= 1;
                 end
                 default:begin

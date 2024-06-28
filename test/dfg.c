@@ -3,64 +3,56 @@
 //  gcc dfg.c -o dfg.elf
 //  ./dfg.elf
 
-char x0 = 0b00100101;
-char x1 = 0b00110101;
-char x2 = 0b11110101;
-char x3 = 0b11101011;
+signed char x0 = 0b00100101;
+signed char x1 = 0b00110101;
+signed char x2 = 0b11110101;
+signed char x3 = 0b11101011;
 
-char y_in0 = 0b00000000;
-char y_in1 = 0b00000000;
-char y_in2 = 0b00000000;
-char y_in3 = 0b00000000;
+signed char y_in0 = 0b00000000;
+signed char y_in1 = 0b00000000;
+signed char y_in2 = 0b00000000;
+signed char y_in3 = 0b00000000;
 
-char Wi00 = 0b10111000;
-char Wi01 = 0b11101000;
-char Wi02 = 0b00100000;
-char Wi03 = 0b10110001;
+signed char Wi00 = 0b10111000;
+signed char Wi01 = 0b11101000;
+signed char Wi02 = 0b00100000;
+signed char Wi03 = 0b10110001;
+signed char Wz00 = 0b00010101;
+signed char Wz01 = 0b11010001;
+signed char Wz02 = 0b11111011;
+signed char Wz03 = 0b00001011;
+signed char Wf00 = 0b00000110;
+signed char Wf01 = 0b11100101;
+signed char Wf02 = 0b11011001;
+signed char Wf03 = 0b10001011;
+signed char Wo00 = 0b00110000;
+signed char Wo01 = 0b00101110;
+signed char Wo02 = 0b11010101;
+signed char Wo03 = 0b01010010;
+signed char Ri00 = 0b00000011;
+signed char Ri01 = 0b10110011;
+signed char Ri02 = 0b01001010;
+signed char Ri03 = 0b10011101;
+signed char Rz00 = 0b01000100;
+signed char Rz01 = 0b11100001;
+signed char Rz02 = 0b11010100;
+signed char Rz03 = 0b01000100;
+signed char Rf00 = 0b10110001;
+signed char Rf01 = 0b01011001;
+signed char Rf02 = 0b00010101;
+signed char Rf03 = 0b10000000;
+signed char Ro00 = 0b00000111;
+signed char Ro01 = 0b10000000;
+signed char Ro02 = 0b00111101;
+signed char Ro03 = 0b10010101;
+signed char pi0 = 0b01100100;
+signed char pf0 = 0b01101101;
+signed char po0 = 0b01011100;
 
-char Wz00 = 0b00010101;
-char Wz01 = 0b11010001;
-char Wz02 = 0b11111011;
-char Wz03 = 0b00001011;
-
-char Wf00 = 0b00000110;
-char Wf01 = 0b11100101;
-char Wf02 = 0b11011001;
-char Wf03 = 0b10001011;
-
-char Wo00 = 0b00110000;
-char Wo01 = 0b00101110;
-char Wo02 = 0b11010101;
-char Wo03 = 0b01010010;
-
-char Ri00 = 0b00000011;
-char Ri01 = 0b10110011;
-char Ri02 = 0b01001010;
-char Ri03 = 0b10011101;
-
-char Rz00 = 0b01000100;
-char Rz01 = 0b11100001;
-char Rz02 = 0b11010100;
-char Rz03 = 0b01000100;
-
-char Rf00 = 0b10110001;
-char Rf01 = 0b01011001;
-char Rf02 = 0b00010101;
-char Rf03 = 0b10000000;
-
-char Ro00 = 0b00000111;
-char Ro01 = 0b10000000;
-char Ro02 = 0b00111101;
-char Ro03 = 0b10010101;
-
-char pi0 = 0b01100100;
-char pf0 = 0b01101101;
-char po0 = 0b01011100;
-
-long  r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,r27;
-char y_out0,y_out1,y_out2,y_out3;
-char c = 0;
-unsigned char sigmoid_mem[255];
+signed long  r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,r27;
+signed long y_out0,y_out1,y_out2,y_out3;
+signed long c = 0;
+unsigned int sigmoid_mem[256];
 
 void init();
 
@@ -76,49 +68,74 @@ void printBinary(int num) {
     }
     printf("\n");
 }
-int idx;
+signed long idx;
 void main(){
     init();
-    r1 = x0 * Wz00 + x1 * Wz01 + x2 * Wz02 + x3 * Wz03;
-    r2 = y_in0 * Rz00 + y_in1 * Rz01 + y_in2 * Rz02 + y_in3 * Rz03;
-    r3 = x0 * Wi00 + x1 * Wi01 + x2 * Wi02 + x3 * Wi03;
-    r4 = y_in0 * Ri00 + y_in1 * Ri01 + y_in2 * Ri02 + y_in3 * Ri03;
-    printf("r1 = 0x%08lX, r2 = 0x%08lX r3 = 0x%08lX r4 = 0x%08lX\n", r1, r2, r3, r4);
-    r5 = c * pf0;
-    r6 = x0 * Wf00 + x1 * Wf01 + x2 * Wf02 + x3 * Wf03;
-    r7 = y_in0 * Rf00 + y_in1 * Rf01 + y_in2 * Rf02 + y_in3 * Rf03;
-    r8 = x0 * Wo00 + x1 * Wo01 + x2 * Wo02 + x3 * Wo03;
-    r9 = y_in0 * Ro00 + y_in1 * Ro01 + y_in2 * Ro02 + y_in3 * Ro03;
-    printf("r5 = 0x%08lX, r6 = 0x%08lX r7 = 0x%08lX r8 = 0x%08lX r9 = 0x%08lX\n", r5, r6, r7, r8, r9);
+    r1 = (x0 * Wz00 + x1 * Wz01 + x2 * Wz02 + x3 * Wz03)>>7;
+    r2 = (y_in0 * Rz00 + y_in1 * Rz01 + y_in2 * Rz02 + y_in3 * Rz03)>>7;
+    r3 = (x0 * Wi00 + x1 * Wi01 + x2 * Wi02 + x3 * Wi03)>>7;
+    r4 = (y_in0 * Ri00 + y_in1 * Ri01 + y_in2 * Ri02 + y_in3 * Ri03)>>7;
+    printf("r1 = 0x%08lX,\a r2 = 0x%08lX\a r3 = 0x%08lX\a r4 = 0x%08lX\n", r1, r2, r3, r4);
+
+    r5 = (c * pf0)>>7;
+    r6 = (x0 * Wf00 + x1 * Wf01 + x2 * Wf02 + x3 * Wf03)>>7;
+    r7 = (y_in0 * Rf00 + y_in1 * Rf01 + y_in2 * Rf02 + y_in3 * Rf03)>>7;
+    r8 = (x0 * Wo00 + x1 * Wo01 + x2 * Wo02 + x3 * Wo03)>>7;
+    r9 = (y_in0 * Ro00 + y_in1 * Ro01 + y_in2 * Ro02 + y_in3 * Ro03)>>7;
+    printf("r5 = 0x%08lX,\a r6 = 0x%08lX\a r7 = 0x%08lX\a r8 = 0x%08lX r9 = 0x%08lX\n", r5, r6, r7, r8, r9);
+
     r10 = r1 + r2;
     r11 = r3 + r4;
-    r12 = c * pi0;
+    r12 = (c * pi0)>>7;
     r13 = r6 + r7;
-    printf("r10 = 0x%08lX, r11 = 0x%08lX r12 = 0x%08lX r13 = 0x%08lX\n", r10, r11, r12, r13);
-    r14 = sigmoid_mem[(r10 >> 8) & 0xFF];
+    printf("r10 = 0x%08lX,\a r11 = 0x%08lX\a r12 = 0x%08lX\a r13 = 0x%08lX\n", r10, r11, r12, r13);
+
+    if(r10 > 32767){
+        idx = 127 << 1;
+        printf("r10 > 32767");
+    } 
+    else if(r10 < -32768){
+        idx = -128 << 1;
+        printf("r10 <-32768");
+    }
+    else
+        idx = r10;
+    printf("idx>>1 = 0x%08lX\a\n",idx>>1);
+    r14 = sigmoid_mem[(idx >> 1) & 0xFF];//TODO: >>7 还是 8(VERILOG中查表只使用高8位)
     r15 = r11 + r12;
     r16 = r5 + r13;
     r17 = r8 + r9;
-    printf("r14 = 0x%08lX, r15 = 0x%08lX r16 = 0x%08lX r17 = 0x%08lX\n", r14, r15, r16, r17);
-    r18 = sigmoid_mem[(r15 >> 8) & 0xFF];
-    r19 = sigmoid_mem[(r16 >> 8) & 0xFF];
-    r20 = r18 * r14;
-    r21 = c * r19;
-    printf("r18 = 0x%08lX, r19 = 0x%08lX r20 = 0x%08lX r21 = 0x%08lX\n", r18, r19, r20, r21);
+    printf("r14 = 0x%08lX,\a r15 = 0x%08lX\a r16 = 0x%08lX\a r17 = 0x%08lX\n", r14, r15, r16, r17);
+
+    if(r15 > 32767) idx = 127 << 1; else if(r15 < -32768) idx = -128 << 1; else idx = r15;
+    printf("idx>>1 = 0x%08lX\a\n",idx>>1);
+    r18 = sigmoid_mem[(idx >> 1) & 0xFF];   //TODO: check
+
+    if(r16 > 32767) idx = 127 << 1; else if(r16 < -32768) idx = -128 << 1; else idx = r16;
+    printf("idx>>1 = 0x%08lX\a\n",idx>>1);
+    r19 = sigmoid_mem[(idx >> 1) & 0xFF];
+    
+    r20 = (r18 * r14)>>7;
+    r21 = (c * r19)>>7;
+    printf("r18 = 0x%08lX,\a r19 = 0x%08lX\a r20 = 0x%08lX\a r21 = 0x%08lX\n", r18, r19, r20, r21);
+
     r22 = r20 + r21;
     r23 = r22;
+    c = r22;
+    // c = (r22 >> 7) & 0xFF;//TODO: check
+    printf("r22 = 0x%08lX,\a r23 = 0x%08lX\a c = 0x%08lX\n", r22, r23, c);
 
-    c = (r22 >> 7) & 0xFF;
-    printf("r22 = 0x%08lX, r23 = 0x%08lX c = 0x%08X\n", r22, r23, c);
-    r24 = sigmoid_mem[(r22 >> 8) & 0xFF];
-    r25 = po0 * r23;
+    r24 = sigmoid_mem[(r22 >> 1) & 0xFF];
+    r25 = (po0 * r23)>>7;
     r26 = r25 + r17;
+
     idx = r26;
-    if(r26 > 32767) idx = 127 << 8; else if(r26 < -32768) r26 = -128 << 8;
-    r27 = sigmoid_mem[(idx >> 8) & 0xFF];
-    printf("(r26 >> 8) & 0xFF = 0x%08lX\n", (r26 >> 8) & 0xFF);
-    printf("idx = %d\n",idx);
-    printf("r24 = 0x%08lX, r25 = 0x%08lX r26 = 0x%08lX r27 = 0x%08lX\n", r24, r25, r26, r27);
+    if(r26 > 32767) idx = 127 << 1; else if(r26 < -32768) r26 = -128 << 1; else idx = r26;
+    r27 = sigmoid_mem[(idx >> 1) & 0xFF];
+        printf("(r26 >> 8) & 0xFF = 0x%08lX\n", (r26 ) & 0xFF);//for test
+        printf("idx = %ld\n",idx);
+    printf("r24 = 0x%08lX,\a r25 = 0x%08lX\a r26 = 0x%08lX\a r27 = 0x%08lX\n", r24, r25, r26, r27);
+
     y_out0 = (r24 * r27) >> 7;
     printBinary(y_out0);
     // printf("y_out0 = 0x%08X\n", y_out0);
