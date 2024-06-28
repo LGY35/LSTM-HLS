@@ -1,6 +1,6 @@
 module lstm
 #(  parameter DATA_WIDTH = 8,  
-    parameter REG_WIDTH = 32
+    parameter REG_WIDTH = 32    //TODO: 位宽对结果的影响
 )
 (
     // ------------input-----------------   
@@ -25,9 +25,9 @@ module lstm
     input wire signed [DATA_WIDTH*4-1:0] Ro,  
     input wire signed [DATA_WIDTH*3-1:0] p,  
     // sigmod data
-    input wire signed [DATA_WIDTH-1:0] sigmod_data_in1,
-    input wire signed [DATA_WIDTH-1:0] sigmod_data_in2,
-    input wire signed [DATA_WIDTH-1:0] sigmod_data_in3,
+    input wire [DATA_WIDTH-1:0] sigmod_data_in1,//输入的sigmod的值为无符号数
+    input wire [DATA_WIDTH-1:0] sigmod_data_in2,//输入的sigmod的值为无符号数
+    input wire [DATA_WIDTH-1:0] sigmod_data_in3,//输入的sigmod的值为无符号数
 
     // ------------output-----------------  
     output reg sigmod_request1, 
@@ -162,7 +162,7 @@ always @(*) begin
                             sigmod_data_out1 = -128;
                         else    
                             sigmod_data_out1[6:0] = r1[14:8];  
-                            sigmod_data_out1[7] = r1[31];
+                            sigmod_data_out1[7] = r1[REG_WIDTH-1];
                     end
                     sigmod_request1 = 1;
                     // r2 查找
@@ -173,7 +173,7 @@ always @(*) begin
                             sigmod_data_out2 = -128;
                         else    
                             sigmod_data_out2[6:0] = r2[14:8];
-                            sigmod_data_out2[7] = r2[31];
+                            sigmod_data_out2[7] = r2[REG_WIDTH-1];
                     end
                     sigmod_request2 = 1;
                     // r3 查找
@@ -184,7 +184,7 @@ always @(*) begin
                             sigmod_data_out3 = -128;
                         else    
                             sigmod_data_out3[6:0] = r3[14:8];
-                            sigmod_data_out3[7] = r3[31];
+                            sigmod_data_out3[7] = r3[REG_WIDTH-1];
                     end
                     sigmod_request3 = 1;
                 end
@@ -197,7 +197,7 @@ always @(*) begin
                             sigmod_data_out2 = -128;
                         else    
                             sigmod_data_out2[6:0] = r2[14:8];
-                            sigmod_data_out2[7] = r2[31];
+                            sigmod_data_out2[7] = r2[REG_WIDTH-1];
                     end
                     sigmod_request2 = 1;
                 end
@@ -209,7 +209,7 @@ always @(*) begin
                             sigmod_data_out1 = -128;
                         else    
                             sigmod_data_out1[6:0] = r1[14:8];
-                            sigmod_data_out1[7] = r1[31];
+                            sigmod_data_out1[7] = r1[REG_WIDTH-1];
                     end
                     sigmod_request1 = 1;
                 end
@@ -238,6 +238,10 @@ reg [REG_WIDTH-1:0] r1_0, r1_1, r1_2, r1_3;
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 1'b0) begin
         r1 <= 0;
+        r1_0 <= 0;
+        r1_1 <= 0;
+        r1_2 <= 0;
+        r1_3 <= 0;
     end 
     else begin
         case(curr_state)
@@ -245,7 +249,6 @@ always @(posedge clk or negedge rst_n) begin
             case(counter)
             //第1个内积
                 0:begin 
-                    r1 <= 0;
                     r1_0 <= Wi0 * x0;
                     r1_1 <= Wi1 * x1;
                 end
@@ -279,7 +282,7 @@ always @(posedge clk or negedge rst_n) begin
                     r1_1 <= Wo1 * x1;
                 end
                 9:begin
-                    r1 <= sigmod_data_in1;
+                    r1 <= sigmod_data_in1; 
                     r1_0 <= r1_0 + r1_1;
                     r1_2 <= Wo2 * x2;
                     r1_3 <= Wo3 * x3;
@@ -296,7 +299,7 @@ always @(posedge clk or negedge rst_n) begin
                     r1 <=  r1 + r3;
                 end
                 14:
-                    r1 <= sigmod_data_in1;
+                    r1 <= sigmod_data_in1; 
                 default:;
             endcase 
             default:
@@ -310,6 +313,10 @@ reg [REG_WIDTH-1:0] r2_0, r2_1, r2_2, r2_3;
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 1'b0) begin
         r2 <= 0; 
+        r2_0 <= 0;
+        r2_1 <= 0;
+        r2_2 <= 0;
+        r2_3 <= 0;
     end
     else 
         case(curr_state)
@@ -317,7 +324,6 @@ always @(posedge clk or negedge rst_n) begin
             case(counter)
             //第1个内积
                 0:begin 
-                    r2 <= 0;
                     r2_0 <= Ri0 * y_in0;
                     r2_1 <= Ri1 * y_in1;
                 end
@@ -379,13 +385,16 @@ reg [REG_WIDTH-1:0] r3_0, r3_1, r3_2, r3_3;
 always @(posedge clk or negedge rst_n) begin
     if(rst_n == 1'b0) begin
         r3 <= 0;
+        r3_0 <= 0;
+        r3_1 <= 0;
+        r3_2 <= 0;
+        r3_3 <= 0;
     end 
     else 
         case(curr_state)
             BUSY:
             case(counter)
                 0:begin 
-                    r3 <= 0;
                     r3_0 <= Wf0 * x0;
                     r3_1 <= Wf1 * x1;
                 end
@@ -400,9 +409,8 @@ always @(posedge clk or negedge rst_n) begin
                     r3 <=  r3_0 + r3_2; // 第四个控制步算完内积
                 4: 
                     r3 <= c * pf;
-                8:begin
+                8:
                     r3 <= r3 + r6;
-                end 
                 9:
                     r3 <= sigmod_data_in3;
                 11: 
@@ -419,14 +427,18 @@ end
 reg [REG_WIDTH-1:0] r4_0, r4_1, r4_2, r4_3;
 // reg4
 always @(posedge clk or negedge rst_n) begin
-    if(rst_n == 1'b0)
+    if(rst_n == 1'b0) begin
         r4 <= 0;
-    else 
+        r4_0 <= 0;
+        r4_1 <= 0;
+        r4_2 <= 0;
+        r4_3 <= 0;
+    end
+    else begin
         case(curr_state)
             BUSY:
             case(counter)
                 0:begin 
-                    r4 <= 0;
                     r4_0 <= Rf0 * y_in0;
                     r4_1 <= Rf1 * y_in1;
                 end
@@ -439,15 +451,14 @@ always @(posedge clk or negedge rst_n) begin
                     r4_2 <= r4_2 + r4_3;
                 3:
                     r4 <=  r4_0 + r4_2; // 第四个控制步算完内积
-                4: 
-                    r4 <= r1 + r2;
-                11:
+                4,11: 
                     r4 <= r1 + r2;
                 default:;
             endcase 
             default:
                 r4 <= 0;
         endcase
+    end
 end
 
 // reg5
@@ -458,8 +469,6 @@ always @(posedge clk or negedge rst_n) begin
         case(curr_state)
             BUSY:
             case(counter)
-                0,1,2,3:
-                    r5 <= 0;
                 4:  
                     r5 <= c * pi;
                 default:;
@@ -477,8 +486,6 @@ always @(posedge clk or negedge rst_n) begin
         case(curr_state)
             BUSY:
             case(counter)
-                0,1,2,3:
-                    r6 <= 0;
                 4:  
                     r6 <= r3 + r4;
                 default:;
@@ -497,8 +504,7 @@ always @(posedge clk or negedge rst_n) begin
             BUSY:
             case(counter)
                 11:  begin
-                    c <= (r1 + r2) ; //忽略最低位的数据
-                    // c <=1;
+                    c <= (r1 + r2) >> 7; //忽略最低位的数据
                 end
                 default:;
             endcase 

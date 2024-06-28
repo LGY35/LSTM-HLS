@@ -4,6 +4,7 @@ module tb_lstm_top;
 
 // Parameters
 parameter DATA_WIDTH = 8;
+parameter REG_WIDTH = 8;
 parameter CYCLE = 10; // Clock cycle: 10ns
 
 // Inputs
@@ -38,7 +39,8 @@ reg signed [DATA_WIDTH-1:0] X43_IN;
 
 // Instantiate the Unit Under Test (UUT)
 lstm_top #(
-    .DATA_WIDTH(DATA_WIDTH)
+    .DATA_WIDTH(DATA_WIDTH),
+    .REG_WIDTH(REG_WIDTH)
 ) uut (
     .clk(clk),
     .rst_n(rst_n),
@@ -182,7 +184,7 @@ end
 
 // Display outputs for debugging
 initial begin
-    $monitor("Time = %t, finished = %b, y_out[0] = %d, y_out[1] = %d, y_out[2] = %d, y_out[3] = %d", $time, finished, y_out[0], y_out[1], y_out[2], y_out[3]);
+    $monitor("Time = %t, finished = %b, y_out[0] = %b, y_out[1] = %b, y_out[2] = %b, y_out[3] = %b", $time, finished, y_out[0], y_out[1], y_out[2], y_out[3]);
 end
 
 // 生成FSDB文件
